@@ -1,0 +1,1 @@
+export const AllProductsUrl = "https://app.spiritx.co.nz/api/products"
