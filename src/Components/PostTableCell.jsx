@@ -48,12 +48,8 @@ const PostTableCell = ({ products, onDelet, onSuccess }) => {
                 src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />
             </TableCell>
             <TableCell align="right">
-              <Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)}>
-                Edit
-              </Button>
-              <Button variant="outlined" startIcon={<DeleteIcon />} sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)}>
-                Delete
-              </Button>
+              <Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />
+              <Button variant="outlined" startIcon={<DeleteIcon />} sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)} />
             </TableCell>
           </TableRow>
         ))
