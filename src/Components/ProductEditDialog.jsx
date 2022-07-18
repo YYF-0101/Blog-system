@@ -7,16 +7,17 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import SendIcon from '@mui/icons-material/Send';
+import Box from '@mui/material/Box';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) => {
   //const element = document.querySelector('#put-request-error-handling .date-updated')
-  const [data, setData] = useState([])
   const [updateProduct, setUpdateProduct] = useState({
     id: '',
     title: '',
     description: '',
     price: '',
-    imageUrl: '',
+    product_image: '',
   })
 
   useEffect(() => {
@@ -46,6 +47,10 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
       description: pro.description,
       price: pro.price,
     })
+  }
+
+  const deleteImg = () => {
+    console.log("deleted")
   }
 
 
@@ -80,8 +85,36 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
           defaultValue={selectedProduct.price}
           onChange={handleChange('price')}
         />
+        <TextField
+          label={'ImgUrl'}
+          id="margin-dense"
+          margin="dense"
+          defaultValue={selectedProduct.product_image}
+          onChange={handleChange('product_image')}
+        />
         <label htmlFor="contained-button-file">
-          <input accept="image/*" id="contained-button-file" multiple type="file" />
+          {selectedProduct.product_image ?
+            <Box
+              sx={{ position: 'relative', width: '50%' }}>
+              <Box
+                component="img"
+                sx={{
+                  height: 233,
+                  width: 350,
+                  maxHeight: { xs: 233, md: 167 },
+                  maxWidth: { xs: 350, md: 250 },
+                }}
+                alt={`${selectedProduct.title} image`}
+                src={`https://app.spiritx.co.nz/storage/${selectedProduct.product_image}`} />
+              <HighlightOffIcon
+                sx={{
+                  fontSize: 34,
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                }} onClick={() => deleteImg()} />
+            </Box>
+            : <input accept="image/*" id="contained-button-file" multiple type="file" />}
         </label>
       </DialogContent>
       <DialogActions>

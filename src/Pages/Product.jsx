@@ -14,6 +14,8 @@ import { AllProductsUrl } from "../Resources/API"
 const Product = () => {
   const [products, setProducts] = useState([])
   const [sorting, setSorting] = useState(false)
+  const [titleIcon, setTitleIcon] = useState(false)
+  const [searchInput, setSearchInput] = useState('')
 
   useEffect(() => {
     axios.get(`${AllProductsUrl}`)
@@ -32,32 +34,29 @@ const Product = () => {
   const onSort = (cell) => {
     console.log("clicked" + cell)
     setSorting(!sorting)
-    console.log(sorting)
     switch (true) {
 
       case cell === "Title" && sorting === false:
         setProducts([...products].sort(function (a, b) {
           return a.title?.localeCompare(b.title)
         }))
+        setTitleIcon(!titleIcon)
         break;
 
       case cell === "Title" && sorting === true:
         setProducts([...products].sort(function (a, b) {
           return b.title?.localeCompare(a.title)
         }))
+        setTitleIcon(!titleIcon)
         break;
 
       case cell === "Description" && sorting === false:
-        console.log("false click")
-        console.log(sorting)
         setProducts([...products].sort(function (a, b) {
           return a.description?.localeCompare(b.description)
         }))
         break;
 
       case cell === "Description" && sorting === true:
-        console.log("true click")
-        console.log(sorting)
         setProducts([...products].sort(function (a, b) {
           return b.description?.localeCompare(a.description)
         }))
@@ -82,18 +81,21 @@ const Product = () => {
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <PostTableHeaderCell onSort={onSort} />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <PostTableCell products={products} onDelet={onDelet} onSuccess={onSuccess} />
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <input placeholder="Enter Title" onChange={event => setSearchInput(event.target.value)} />
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <PostTableHeaderCell onSort={onSort} titleIcon={titleIcon} />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <PostTableCell products={products} onDelet={onDelet} onSuccess={onSuccess} onSearch={searchInput} />
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   )
 }
 
