@@ -43,7 +43,7 @@ const PostTableCell = ({ products, onDelet, onSuccess, onSearch }) => {
               <TableCell align="right">{product.description}</TableCell>
               <TableCell align="right">{product.price}</TableCell>
               <TableCell align="right">
-                <Box
+                {product.product_image && <Box
                   component="img"
                   sx={{
                     height: 233,
@@ -52,7 +52,7 @@ const PostTableCell = ({ products, onDelet, onSuccess, onSearch }) => {
                     maxWidth: { xs: 350, md: 250 },
                   }}
                   alt={`${product.title} image`}
-                  src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />
+                  src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />}
               </TableCell>
               <TableCell align="right">
                 <Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />

@@ -53,6 +53,11 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
     console.log("deleted")
   }
 
+  const handleImgChange = (e) => {
+    e.preventDefault();
+    console.log(e.target.files[0])
+    setUpdateProduct({ ...updateProduct, product_image: e.target.value[0] });
+  }
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -85,13 +90,6 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
           defaultValue={selectedProduct.price}
           onChange={handleChange('price')}
         />
-        <TextField
-          label={'ImgUrl'}
-          id="margin-dense"
-          margin="dense"
-          defaultValue={selectedProduct.product_image}
-          onChange={handleChange('product_image')}
-        />
         <label htmlFor="contained-button-file">
           {selectedProduct.product_image ?
             <Box
@@ -114,7 +112,7 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
                   right: 0,
                 }} onClick={() => deleteImg()} />
             </Box>
-            : <input accept="image/*" id="contained-button-file" multiple type="file" />}
+            : <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleImgChange(e)} />}
         </label>
       </DialogContent>
       <DialogActions>
