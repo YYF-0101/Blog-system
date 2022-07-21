@@ -31,10 +31,18 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
   const submitChange = (e) => {
     e.preventDefault()
 
-    console.log(updateProduct)
-    axios.put(`https://app.spiritx.co.nz/api/product/${updateProduct.id}`, updateProduct)
-      .then(res => onSuccess(res.data)
-      )
+    console.log(updateProduct.title)
+    const formData = new FormData()
+    formData.append('title', updateProduct.title)
+    formData.append('description', updateProduct.description)
+    formData.append('price', updateProduct.price)
+    if (updateProduct.product_image) {
+      formData.append('product_image', updateProduct.product_image)
+    }
+
+    console.log(formData)
+    axios.put(`https://app.spiritx.co.nz/api/product/${updateProduct.id}`, formData)
+      .then(res => onSuccess(res.data))
       .catch(error => console.error('There was an error!', error));
 
     setUpdateProduct('')
@@ -56,7 +64,7 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
   const handleImgChange = (e) => {
     e.preventDefault();
     console.log(e.target.files[0])
-    setUpdateProduct({ ...updateProduct, product_image: e.target.value[0] });
+    setUpdateProduct({ ...updateProduct, product_image: e.target.files[0] });
   }
 
   return (

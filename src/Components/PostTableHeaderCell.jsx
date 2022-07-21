@@ -10,20 +10,23 @@ const PostTableHeaderCell = ({ onSort, titleIcon }) => {
 
   return (
     <>
-      <TableCell>
-        <Button variant="outlined" onClick={() => onSort("Title")}> Title <ArrowUpwardIcon sx={{ fontSize: 16 }} style={style} /></Button>
+      <TableCell onClick={() => onSort("Title")}>
+        Title
+        <ArrowUpwardIcon sx={{ fontSize: 16 }} style={style} />
+      </TableCell>
+      <TableCell align="right" onClick={() => onSort("Description")}>
+        Description
+        <ArrowUpwardIcon sx={{ fontSize: 16 }} />
+      </TableCell>
+      <TableCell align="right" onClick={() => onSort("Price")}>
+        Price
+        <ArrowUpwardIcon sx={{ fontSize: 16 }} />
       </TableCell>
       <TableCell align="right">
-        <Button variant="outlined" onClick={() => onSort("Description")}> Description <ArrowUpwardIcon sx={{ fontSize: 16 }} /></Button>
+        Product image
       </TableCell>
       <TableCell align="right">
-        <Button variant="outlined" onClick={() => onSort("Price")}> Price <ArrowUpwardIcon sx={{ fontSize: 16 }} /></Button>
-      </TableCell>
-      <TableCell align="right">
-        <Button variant="outlined"> Product image </Button>
-      </TableCell>
-      <TableCell align="right">
-        <Button variant="outlined"> Edit </Button>
+        Edit
       </TableCell>
     </>
   )

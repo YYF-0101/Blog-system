@@ -10,12 +10,17 @@ import PostTableCell from '../Components/PostTableCell';
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { AllProductsUrl } from "../Resources/API"
+import SearchIcon from '@mui/icons-material/Search';
+import { IconButton } from '@mui/material';
+import { InputAdornment } from '@mui/material';
+import { TextField } from '@mui/material';
 
 const Product = () => {
   const [products, setProducts] = useState([])
   const [sorting, setSorting] = useState(false)
   const [titleIcon, setTitleIcon] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
+  const [filteredProduct, setFilteredProduct] = useState([])
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     axios.get(`${AllProductsUrl}`)
@@ -80,9 +85,41 @@ const Product = () => {
     }
   }
 
+  const submitForm = (e) => {
+    e.preventDefault()
+
+    setProducts(products.filter(product => {
+      if (search === '') {
+        console.log(search)
+        return product;
+      } else if (product.title && product.title.toLowerCase().includes(search.toLowerCase())) {
+        return product;
+      } else if (product.description && product.description.toLowerCase().includes(search.toLowerCase())) {
+        return product;
+      }
+    }))
+  }
+
   return (
     <>
-      <input placeholder="Enter Title" onChange={event => setSearchInput(event.target.value)} />
+      <form onSubmit={submitForm}>
+        <TextField
+          placeholder="Search Title and Description"
+          type="search"
+          variant="outlined"
+          fullWidth
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment>
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+          onChange={e => setSearch(e.target.value)} />
+      </form>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -91,7 +128,7 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <PostTableCell products={products} onDelet={onDelet} onSuccess={onSuccess} onSearch={searchInput} />
+            <PostTableCell products={products} onDelet={onDelet} onSuccess={onSuccess} filteredProduct={filteredProduct} />
           </TableBody>
         </Table>
       </TableContainer>
