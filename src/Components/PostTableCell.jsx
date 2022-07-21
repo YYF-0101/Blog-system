@@ -7,7 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ProductEditDialog from "./ProductEditDialog";
 import Box from '@mui/material/Box';
 
-const PostTableCell = ({ products, onDelet, onSuccess, filteredProduct }) => {
+const PostTableCell = ({ products, onDelet, onSuccess }) => {
   const [onEdit, setOnEdite] = useState(false)
   const [selectedProd, setSelectedProd] = useState("")
 
@@ -24,7 +24,6 @@ const PostTableCell = ({ products, onDelet, onSuccess, filteredProduct }) => {
   return (
     <>
       {
-        // (filteredProduct == null ? products : filteredProduct)
         products.map((product) => (
           <TableRow
             key={product.id}

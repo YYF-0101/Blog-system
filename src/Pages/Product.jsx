@@ -88,9 +88,8 @@ const Product = () => {
   const submitForm = (e) => {
     e.preventDefault()
 
-    setProducts(products.filter(product => {
+    setFilteredProduct(products.filter(product => {
       if (search === '') {
-        console.log(search)
         return product;
       } else if (product.title && product.title.toLowerCase().includes(search.toLowerCase())) {
         return product;
@@ -111,7 +110,7 @@ const Product = () => {
           size="small"
           InputProps={{
             endAdornment: (
-              <InputAdornment>
+              <InputAdornment position="start">
                 <IconButton>
                   <SearchIcon />
                 </IconButton>
@@ -128,7 +127,7 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <PostTableCell products={products} onDelet={onDelet} onSuccess={onSuccess} filteredProduct={filteredProduct} />
+            <PostTableCell products={filteredProduct.length ? filteredProduct : products} onDelet={onDelet} onSuccess={onSuccess} />
           </TableBody>
         </Table>
       </TableContainer>
