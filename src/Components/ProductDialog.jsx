@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { useRef } from 'react';
+import { useEffect, useState, useRef } from 'react'
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
@@ -10,7 +9,7 @@ import SendIcon from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
-const ProductEditDialog = ({ open, dialogData, onOpen, update, addNew }) => {
+const ProductDialog = ({ open, dialogData, onOpen, update, addNew }) => {
   //const element = document.querySelector('#put-request-error-handling .date-updated')
 
   const [dialogProduct, setDialogProduct] = useState()
@@ -32,7 +31,7 @@ const ProductEditDialog = ({ open, dialogData, onOpen, update, addNew }) => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit Product #{dialogData.id}</DialogTitle>
+      <DialogTitle>{dialogData.id ? `Edit Product #${dialogData.id}` : `Add New Product`}</DialogTitle>
       <DialogContent
         sx={{
           display: 'flex',
@@ -99,7 +98,7 @@ const ProductEditDialog = ({ open, dialogData, onOpen, update, addNew }) => {
   )
 }
 
-export default ProductEditDialog
+export default ProductDialog
 
 
 //<Button sx={{ visibility: updateProduct ? "visible" : "hidden" }} onClick={handleClear}>Clear</Button>

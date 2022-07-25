@@ -1,22 +1,21 @@
-import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import PostTableHeaderCell from '../Components/PostTableHeaderCell';
-import PostTableCell from '../Components/PostTableCell';
+import { useState, useEffect } from 'react'
 import axios from "axios"
-import { useEffect, useState } from "react"
 import { AllProductsUrl } from "../Resources/API"
-import SearchIcon from '@mui/icons-material/Search';
-import { IconButton } from '@mui/material';
-import { InputAdornment } from '@mui/material';
-import { TextField } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import Box from '@mui/material/Box';
-import ProductEditDialog from '../Components/ProductEditDialog';
+import ProductDialog from '../Components/ProductDialog'
+import PostTableHeaderCell from '../Components/PostTableHeaderCell'
+import PostTableCell from '../Components/PostTableCell'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import SearchIcon from '@mui/icons-material/Search'
+import { IconButton } from '@mui/material'
+import { InputAdornment } from '@mui/material'
+import { TextField } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import Box from '@mui/material/Box'
 
 const Product = () => {
   const [products, setProducts] = useState([])
@@ -188,7 +187,7 @@ const Product = () => {
             <PostTableCell products={filteredProduct.length ? filteredProduct : products} onDelet={onDelet} onOpen={onOpen} />
           </TableBody>
         </Table>
-        <ProductEditDialog open={isOpen} dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={addNewData} />
+        <ProductDialog open={isOpen} dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={addNewData} />
       </TableContainer>
     </>
   )
