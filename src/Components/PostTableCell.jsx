@@ -4,22 +4,9 @@ import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import ProductEditDialog from "./ProductEditDialog";
 import Box from '@mui/material/Box';
 
-const PostTableCell = ({ products, onDelet, onSuccess }) => {
-  const [onEdit, setOnEdite] = useState(false)
-  const [selectedProd, setSelectedProd] = useState("")
-
-
-  const onOpen = (prod) => {
-    setOnEdite(!onEdit)
-    setSelectedProd(prod)
-  }
-
-  const onClose = () => {
-    setOnEdite(!onEdit)
-  }
+const PostTableCell = ({ products, onDelet, onOpen }) => {
 
   return (
     <>
@@ -54,7 +41,6 @@ const PostTableCell = ({ products, onDelet, onSuccess }) => {
           </TableRow>
         ))
       }
-      <ProductEditDialog open={onEdit} handleClose={onClose} selectedProduct={selectedProd} onSuccess={onSuccess} />
     </>
 
   )

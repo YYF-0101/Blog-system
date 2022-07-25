@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from "axios"
+import { useRef } from 'react';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
@@ -10,66 +10,29 @@ import SendIcon from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
-const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) => {
+const ProductEditDialog = ({ open, dialogData, onOpen, update, addNew }) => {
   //const element = document.querySelector('#put-request-error-handling .date-updated')
-  const [updateProduct, setUpdateProduct] = useState({
-    id: '',
-    title: '',
-    description: '',
-    price: '',
-    product_image: '',
-  })
+
+  const [dialogProduct, setDialogProduct] = useState()
+  const inputRef = useRef(null);
 
   useEffect(() => {
-    setUpdateProduct({ id: selectedProduct.id })
-  }, [selectedProduct.id])
+    setDialogProduct({ id: dialogData.id })
+  }, [dialogData.id])
 
-  const handleChange = (prop) => (event) => {
-    setUpdateProduct({ ...updateProduct, [prop]: event.target.value });
-  }
-
-  const submitChange = (e) => {
-    e.preventDefault()
-
-    console.log(updateProduct.title)
-    const formData = new FormData()
-    formData.append('title', updateProduct.title)
-    formData.append('description', updateProduct.description)
-    formData.append('price', updateProduct.price)
-    if (updateProduct.product_image) {
-      formData.append('product_image', updateProduct.product_image)
-    }
-
-    console.log(formData)
-    axios.put(`https://app.spiritx.co.nz/api/product/${updateProduct.id}`, formData)
-      .then(res => onSuccess(res.data))
-      .catch(error => console.error('There was an error!', error));
-
-    setUpdateProduct('')
-    handleClose()
-  }
-
-  const handleClear = (pro) => {
-    setUpdateProduct({
-      title: pro.title,
-      description: pro.description,
-      price: pro.price,
-    })
+  const handleChange = (e) => {
+    setDialogProduct({ ...dialogProduct, [e.target.name]: e.target.name === "product_image" ? e.target.files[0] : e.target.value });
+    console.log(dialogProduct)
   }
 
   const deleteImg = () => {
     console.log("deleted")
-  }
-
-  const handleImgChange = (e) => {
-    e.preventDefault();
-    console.log(e.target.files[0])
-    setUpdateProduct({ ...updateProduct, product_image: e.target.files[0] });
+    inputRef.current.value = null;
   }
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Edit Product #{selectedProduct.id}</DialogTitle>
+    <Dialog open={open}>
+      <DialogTitle>Edit Product #{dialogData.id}</DialogTitle>
       <DialogContent
         sx={{
           display: 'flex',
@@ -78,28 +41,31 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
           maxWidth: '100%',
         }}>
         <TextField
+          name='title'
           label={'Title'}
           id="margin-dense"
           margin="dense"
-          defaultValue={selectedProduct.title}
-          onChange={handleChange('title')}
+          defaultValue={dialogData.title}
+          onChange={e => handleChange(e)}
         />
         <TextField
+          name='description'
           label={'Description'}
           id="margin-dense"
           margin="dense"
-          defaultValue={selectedProduct.description}
-          onChange={handleChange('description')}
+          defaultValue={dialogData.description}
+          onChange={e => handleChange(e)}
         />
         <TextField
+          name='price'
           label={'Price'}
           id="margin-dense"
           margin="dense"
-          defaultValue={selectedProduct.price}
-          onChange={handleChange('price')}
+          defaultValue={dialogData.price}
+          onChange={e => handleChange(e)}
         />
         <label htmlFor="contained-button-file">
-          {selectedProduct.product_image ?
+          {dialogData.product_image ?
             <Box
               sx={{ position: 'relative', width: '50%' }}>
               <Box
@@ -110,8 +76,8 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
                   maxHeight: { xs: 233, md: 167 },
                   maxWidth: { xs: 350, md: 250 },
                 }}
-                alt={`${selectedProduct.title} image`}
-                src={`https://app.spiritx.co.nz/storage/${selectedProduct.product_image}`} />
+                alt={`${dialogData.title} image`}
+                src={`https://app.spiritx.co.nz/storage/${dialogData.product_image}`} />
               <HighlightOffIcon
                 sx={{
                   fontSize: 34,
@@ -120,12 +86,12 @@ const ProductEditDialog = ({ open, handleClose, selectedProduct, onSuccess }) =>
                   right: 0,
                 }} onClick={() => deleteImg()} />
             </Box>
-            : <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleImgChange(e)} />}
+            : <input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleChange(e)} />}
         </label>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button variant="contained" endIcon={<SendIcon />} type="submit" onClick={(e) => submitChange(e)}>
+        <Button onClick={onOpen}>Cancel</Button>
+        <Button variant="contained" endIcon={<SendIcon />} type="submit" onClick={() => dialogData.id ? update(dialogProduct) : addNew(dialogProduct)}>
           Send
         </Button>
       </DialogActions>

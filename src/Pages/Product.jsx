@@ -14,13 +14,25 @@ import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 import { InputAdornment } from '@mui/material';
 import { TextField } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import Box from '@mui/material/Box';
+import ProductEditDialog from '../Components/ProductEditDialog';
 
 const Product = () => {
   const [products, setProducts] = useState([])
   const [sorting, setSorting] = useState(false)
   const [titleIcon, setTitleIcon] = useState(false)
   const [filteredProduct, setFilteredProduct] = useState([])
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState('search')
+  const [isOpen, setIsOpen] = useState(false)
+  const [dialogData, setDialogData] = useState("")
+  const defaultProduct = {
+    id: '',
+    title: '',
+    description: '',
+    price: '',
+    product_image: '',
+  }
 
   useEffect(() => {
     axios.get(`${AllProductsUrl}`)
@@ -90,7 +102,7 @@ const Product = () => {
 
     setFilteredProduct(products.filter(product => {
       if (search === '') {
-        return product;
+        return null;
       } else if (product.title && product.title.toLowerCase().includes(search.toLowerCase())) {
         return product;
       } else if (product.description && product.description.toLowerCase().includes(search.toLowerCase())) {
@@ -99,26 +111,72 @@ const Product = () => {
     }))
   }
 
+  const onOpen = (prod) => {
+    setIsOpen(!isOpen)
+    prod && setDialogData(prod)
+  }
+
+  const updataData = (prod) => {
+
+    console.log(prod)
+    axios.put(`https://app.spiritx.co.nz/api/product/${prod.id}`, prod)
+      .then(res => onSuccess(res.data))
+      .catch(error => console.error('There was an error!', error));
+    setIsOpen(!isOpen)
+
+    /*
+
+    const formData = new FormData()
+    formData.append("id", dialogProduct.id)
+    formData.append("title", dialogProduct.title)
+    formData.append("description", dialogProduct.description)
+    formData.append("price", dialogProduct.price)
+    if (dialogProduct.product_image) {
+      formData.append('product_image', dialogProduct.product_image)
+    }
+
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+    
+    //setUpdateProduct(defaultProduct)
+    */
+
+  }
+
+  const addNewData = (prod) => {
+    console.log(prod)
+    axios.post(`https://app.spiritx.co.nz/api/products`, prod)
+      .then(res => console.log(res.data))
+      .catch(error => console.error('There was an error!', error));
+  }
+
   return (
     <>
-      <form onSubmit={submitForm}>
-        <TextField
-          placeholder="Search Title and Description"
-          type="search"
-          variant="outlined"
-          fullWidth
-          size="small"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="start">
-                <IconButton>
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-          onChange={e => setSearch(e.target.value)} />
-      </form>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <form onSubmit={submitForm}>
+          <TextField
+            placeholder="Search Title and Description"
+            type="search"
+            variant="outlined"
+            fullWidth
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  <IconButton>
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+            onChange={e => setSearch(e.target.value)} />
+        </form>
+
+        <IconButton onClick={() => onOpen(defaultProduct)} ><AddIcon /></IconButton>
+      </Box>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -127,9 +185,10 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <PostTableCell products={filteredProduct.length ? filteredProduct : products} onDelet={onDelet} onSuccess={onSuccess} />
+            <PostTableCell products={filteredProduct.length ? filteredProduct : products} onDelet={onDelet} onOpen={onOpen} />
           </TableBody>
         </Table>
+        <ProductEditDialog open={isOpen} dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={addNewData} />
       </TableContainer>
     </>
   )
