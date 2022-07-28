@@ -18,14 +18,14 @@ import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 
 const Product = () => {
-  const [products, setProducts] = useState([])
+  const [DefaultProducts, setDefaultProducts] = useState([])
   const [sorting, setSorting] = useState(false)
   const [titleIcon, setTitleIcon] = useState(false)
-  const [filteredProduct, setFilteredProduct] = useState([])
+  const [Products, setProducts] = useState([])
   const [search, setSearch] = useState('search')
   const [isOpen, setIsOpen] = useState(false)
   const [dialogData, setDialogData] = useState("")
-  const defaultProduct = {
+  const defaultDialog = {
     id: '',
     title: '',
     description: '',
@@ -35,16 +35,19 @@ const Product = () => {
 
   useEffect(() => {
     axios.get(`${BaseUrl}products`)
-      .then(response => setProducts(response.data))
+      .then(response => {
+        setDefaultProducts(response.data)
+        setProducts(response.data)
+      })
       .catch(error => console.log(error))
   }, [])
 
   const onDelet = (id) => {
-    setProducts(products.filter((product) => product.id !== id))
+    setProducts(Products.filter((product) => product.id !== id))
   }
 
   const onSuccess = data => {
-    setProducts(products.map((product) => product.id === data.id ? data : product))
+    setProducts(Products.map((product) => product.id === data.id ? data : product))
   }
 
   const onSort = (cell) => {
@@ -53,39 +56,39 @@ const Product = () => {
     switch (true) {
 
       case cell === "Title" && sorting === false:
-        setProducts([...products].sort(function (a, b) {
+        setProducts([...Products].sort(function (a, b) {
           return a.title?.localeCompare(b.title)
         }))
         setTitleIcon(!titleIcon)
         break;
 
       case cell === "Title" && sorting === true:
-        setProducts([...products].sort(function (a, b) {
+        setProducts([...Products].sort(function (a, b) {
           return b.title?.localeCompare(a.title)
         }))
         setTitleIcon(!titleIcon)
         break;
 
       case cell === "Description" && sorting === false:
-        setProducts([...products].sort(function (a, b) {
+        setProducts([...Products].sort(function (a, b) {
           return a.description?.localeCompare(b.description)
         }))
         break;
 
       case cell === "Description" && sorting === true:
-        setProducts([...products].sort(function (a, b) {
+        setProducts([...Products].sort(function (a, b) {
           return b.description?.localeCompare(a.description)
         }))
         break;
 
       case cell === "Price" && sorting === false:
-        setProducts([...products].sort(function (a, b) {
+        setProducts([...Products].sort(function (a, b) {
           return a.price - b.price
         }))
         break;
 
       case cell === "Price" && sorting === true:
-        setProducts([...products].sort(function (a, b) {
+        setProducts([...Products].sort(function (a, b) {
           return b.price - a.price
         }))
         break;
@@ -96,12 +99,12 @@ const Product = () => {
     }
   }
 
-  const submitForm = (e) => {
+  const submitSearchForm = (e) => {
     e.preventDefault()
 
-    setFilteredProduct(products.filter(product => {
+    setProducts(DefaultProducts.filter(product => {
       if (search === '') {
-        return null;
+        return product;
       } else if (product.title && product.title.toLowerCase().includes(search.toLowerCase())) {
         return product;
       } else if (product.description && product.description.toLowerCase().includes(search.toLowerCase())) {
@@ -155,7 +158,7 @@ const Product = () => {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <form onSubmit={submitForm}>
+        <form onSubmit={submitSearchForm}>
           <TextField
             placeholder="Search Title and Description"
             type="search"
@@ -174,7 +177,7 @@ const Product = () => {
             onChange={e => setSearch(e.target.value)} />
         </form>
 
-        <IconButton onClick={() => onOpen(defaultProduct)} ><AddIcon /></IconButton>
+        <IconButton onClick={() => onOpen(defaultDialog)} ><AddIcon /></IconButton>
       </Box>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -184,10 +187,10 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <PostTableCell products={filteredProduct.length ? filteredProduct : products} onOpen={onOpen} onDelet={onDelet} />
+            <PostTableCell products={Products} onOpen={onOpen} onDelet={onDelet} />
           </TableBody>
         </Table>
-        <ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={addNewData} open={isOpen} />
+        <ProductDialog dialogData={dialogData.id ? dialogData : defaultDialog} onOpen={onOpen} update={updataData} addNew={addNewData} open={isOpen} />
       </TableContainer>
     </>
   )
