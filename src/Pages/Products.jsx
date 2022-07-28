@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from "axios"
-import { AllProductsUrl } from "../Resources/API"
+import { BaseUrl } from "../Resources/API"
 import ProductDialog from '../Components/ProductDialog'
 import PostTableHeaderCell from '../Components/PostTableHeaderCell'
 import PostTableCell from '../Components/PostTableCell'
@@ -34,14 +34,14 @@ const Product = () => {
   }
 
   useEffect(() => {
-    axios.get(`${AllProductsUrl}`)
+    axios.get(`${BaseUrl}products`)
       .then(response => setProducts(response.data))
       .catch(error => console.log(error))
   }, [])
 
-  const onDelet = (id) => {
-    setProducts(products.filter((product) => product.id !== id))
-  }
+  // const onDelet = (id) => {
+  //   setProducts(products.filter((product) => product.id !== id))
+  // }
 
   const onSuccess = data => {
     setProducts(products.map((product) => product.id === data.id ? data : product))
@@ -184,10 +184,10 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <PostTableCell products={filteredProduct.length ? filteredProduct : products} onDelet={onDelet} onOpen={onOpen} />
+            <PostTableCell products={filteredProduct.length ? filteredProduct : products} />
           </TableBody>
         </Table>
-        <ProductDialog open={isOpen} dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={addNewData} />
+        <ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={addNewData} open={isOpen} />
       </TableContainer>
     </>
   )

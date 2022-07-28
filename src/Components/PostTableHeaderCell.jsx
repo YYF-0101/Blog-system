@@ -1,6 +1,5 @@
 import { TableCell } from "@mui/material"
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import Button from '@mui/material/Button';
 
 const PostTableHeaderCell = ({ onSort, titleIcon }) => {
   const style = {
