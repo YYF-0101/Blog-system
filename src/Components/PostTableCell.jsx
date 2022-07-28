@@ -36,6 +36,7 @@ const PostTableCell = ({ products, onDelet, onOpen }) => {
             <TableCell align="right">
               <Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />
               <Button variant="outlined" startIcon={<DeleteIcon />} sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)} />
+              <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)} >EDIT</Button>
             </TableCell>
           </TableRow>
         ))

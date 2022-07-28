@@ -39,9 +39,9 @@ const Product = () => {
       .catch(error => console.log(error))
   }, [])
 
-  // const onDelet = (id) => {
-  //   setProducts(products.filter((product) => product.id !== id))
-  // }
+  const onDelet = (id) => {
+    setProducts(products.filter((product) => product.id !== id))
+  }
 
   const onSuccess = data => {
     setProducts(products.map((product) => product.id === data.id ? data : product))
@@ -184,7 +184,7 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <PostTableCell products={filteredProduct.length ? filteredProduct : products} />
+            <PostTableCell products={filteredProduct.length ? filteredProduct : products} onOpen={onOpen} onDelet={onDelet} />
           </TableBody>
         </Table>
         <ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={addNewData} open={isOpen} />
