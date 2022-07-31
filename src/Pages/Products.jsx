@@ -25,13 +25,19 @@ const Product = () => {
   const [search, setSearch] = useState('search')
   const [isOpen, setIsOpen] = useState(false)
   const [dialogData, setDialogData] = useState("")
+  const [editNum, setEditNum] = useState("")
+  const [productsOpacity, setProductsOpacity] = useState(false)
   const defaultDialog = {
-    id: '',
-    title: '',
-    description: '',
-    price: '',
-    product_image: '',
+    id: null,
+    title: null,
+    description: null,
+    price: null,
+    product_image: null,
+    category_id: null,
   }
+  const config = {
+    headers: { token: `${localStorage.getItem('token')}` }
+  };
 
   useEffect(() => {
     axios.get(`${BaseUrl}products`)
@@ -122,12 +128,19 @@ const Product = () => {
 
     console.log(prod)
     axios.put(`https://app.spiritx.co.nz/api/product/${prod.id}`, prod)
-      .then(res => onSuccess(res.data))
+      .then(res => {
+        onSuccess(res.data)
+        setIsOpen(false)
+        setEditNum('')
+      })
       .catch(error => console.error('There was an error!', error));
-    setIsOpen(!isOpen)
+
+
+
+
 
     /*
-
+  
     const formData = new FormData()
     formData.append("id", dialogProduct.id)
     formData.append("title", dialogProduct.title)
@@ -136,7 +149,7 @@ const Product = () => {
     if (dialogProduct.product_image) {
       formData.append('product_image', dialogProduct.product_image)
     }
-
+  
     {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -150,14 +163,30 @@ const Product = () => {
 
   const addNewData = (prod) => {
     console.log(prod)
-    axios.post(`https://app.spiritx.co.nz/api/products`, prod)
-      .then(res => console.log(res.data))
+    axios.post(`https://app.spiritx.co.nz/api/products`, prod, config)
+      .then(res => {
+        setIsOpen(false)
+        onSuccess(res.data)
+        setEditNum('')
+      })
       .catch(error => console.error('There was an error!', error));
+
+  }
+
+  const onToggle = (id) => {
+    console.log("Toggled" + id)
+    setEditNum(id)
+    setProductsOpacity(!productsOpacity)
+  }
+
+  const onCancel = (id) => {
+    setEditNum('')
+    setProductsOpacity(!productsOpacity)
   }
 
   return (
     <>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
         <form onSubmit={submitSearchForm}>
           <TextField
             placeholder="Search Title and Description"
@@ -181,13 +210,13 @@ const Product = () => {
       </Box>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
+          <TableHead sx={{ opacity: productsOpacity ? "0.2" : "1" }}>
             <TableRow>
               <PostTableHeaderCell onSort={onSort} titleIcon={titleIcon} />
             </TableRow>
           </TableHead>
-          <TableBody>
-            <PostTableCell products={Products} onOpen={onOpen} onDelet={onDelet} />
+          <TableBody >
+            <PostTableCell products={Products} onOpen={onOpen} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} />
           </TableBody>
         </Table>
         <ProductDialog dialogData={dialogData.id ? dialogData : defaultDialog} onOpen={onOpen} update={updataData} addNew={addNewData} open={isOpen} />

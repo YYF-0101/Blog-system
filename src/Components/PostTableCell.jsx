@@ -4,39 +4,119 @@ import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
+import { TextField } from '@mui/material';
+import DoneIcon from '@mui/icons-material/Done';
+import CancelIcon from '@mui/icons-material/Cancel';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import { useState } from 'react';
 
-const PostTableCell = ({ products, onDelet, onOpen }) => {
+
+const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel, update, productsOpacity }) => {
+
+  const [tableCellEdit, setTableCellEdit] = useState([])
+
+  const handleChange = (e) => {
+    setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.name === "product_image" ? e.target.files[0] : e.target.value });
+    console.log(tableCellEdit)
+  }
+
+  console.log(productsOpacity)
 
   return (
     <>
       {
-        products.map((product) => (
+        products.map((product, index) => (
           <TableRow
-            key={product.id}
+            key={index}
             id={product.id}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            sx={{
+              '&:last-child td, &:last-child th': { border: 0 },
+              opacity: productsOpacity && editNum === index ? "1!important" : null,
+              opacity: productsOpacity ? (editNum === index ? "1" : "0.2") : "1",
+            }}
           >
             <TableCell component="th" scope="row">
-              {product.title}
+              {editNum === index ?
+                <TextField
+                  name='title'
+                  defaultValue={product.title}
+                  onChange={e => handleChange(e)}
+                />
+                : <div>{product.title}</div>}
             </TableCell>
-            <TableCell align="right">{product.description}</TableCell>
-            <TableCell align="right">{product.price}</TableCell>
+            <TableCell align="right" >
+              {editNum === index ?
+                <TextField
+                  name='description'
+                  defaultValue={product.description}
+                  onChange={e => handleChange(e)}
+                />
+                : <div>{product.description}</div>
+              }
+
+            </TableCell>
             <TableCell align="right">
-              {product.product_image && <Box
-                component="img"
+              {editNum === index ?
+                <TextField
+                  name='price'
+                  defaultValue={product.price}
+                  onChange={e => handleChange(e)}
+                />
+                : <div>{product.price}</div>
+              }
+            </TableCell>
+            <TableCell align="right">
+              <Box
                 sx={{
-                  height: 233,
-                  width: 350,
-                  maxHeight: { xs: 233, md: 167 },
-                  maxWidth: { xs: 350, md: 250 },
-                }}
-                alt={`${product.title} image`}
-                src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />}
+                  display: "inline-block",
+                  position: 'relative',
+                }}>
+                {product.product_image && <Box
+                  component="img"
+                  sx={{
+                    height: 233,
+                    width: 350,
+                    maxHeight: { xs: 233, md: 167 },
+                    maxWidth: { xs: 350, md: 250 },
+                  }}
+                  alt={`${product.title} image`}
+                  src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />}
+                {editNum === index &&
+                  <HighlightOffIcon
+                    sx={{
+                      fontSize: 34,
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                    }} />
+                }
+              </Box>
+              {editNum === index &&
+                <AddAPhotoIcon
+                  sx={{
+                    display: "inline-block"
+                  }} />
+              }
             </TableCell>
             <TableCell align="right">
-              <Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />
-              <Button variant="outlined" startIcon={<DeleteIcon />} sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)} />
-              <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)} >EDIT</Button>
+              {
+                editNum === index ?
+                  <>
+                    <Button variant="outlined" startIcon={<DoneIcon />} size="medium" onClick={() => update(tableCellEdit)} />
+                    <Button variant="outlined" startIcon={<CancelIcon />} sx={{ ml: 1.5 }} onClick={() => onCancel(index)} />
+                  </>
+                  :
+                  <>
+                    <Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />
+                    <Button variant="outlined" startIcon={<DeleteIcon />} sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)} />
+                    <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => {
+                      onToggle(index)
+                      setTableCellEdit({ id: product.id })
+                    }} >EDIT</Button>
+                  </>
+              }
+
             </TableCell>
           </TableRow>
         ))
