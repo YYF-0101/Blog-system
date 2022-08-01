@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
@@ -8,20 +9,15 @@ import { TextField } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { useState } from 'react';
 
-
-const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel, update, productsOpacity }) => {
+const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel, productsOpacity, addNew }) => {
 
   const [tableCellEdit, setTableCellEdit] = useState([])
+  const inputRef = useRef(null);
 
   const handleChange = (e) => {
     setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.name === "product_image" ? e.target.files[0] : e.target.value });
-    console.log(tableCellEdit)
   }
-
-  console.log(productsOpacity)
 
   return (
     <>
@@ -32,7 +28,6 @@ const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel,
             id={product.id}
             sx={{
               '&:last-child td, &:last-child th': { border: 0 },
-              opacity: productsOpacity && editNum === index ? "1!important" : null,
               opacity: productsOpacity ? (editNum === index ? "1" : "0.2") : "1",
             }}
           >
@@ -82,7 +77,7 @@ const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel,
                   }}
                   alt={`${product.title} image`}
                   src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />}
-                {editNum === index &&
+                {editNum === index && product.product_image &&
                   <HighlightOffIcon
                     sx={{
                       fontSize: 34,
@@ -93,17 +88,15 @@ const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel,
                 }
               </Box>
               {editNum === index &&
-                <AddAPhotoIcon
-                  sx={{
-                    display: "inline-block"
-                  }} />
+
+                <input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleChange(e)} />
               }
             </TableCell>
             <TableCell align="right">
               {
                 editNum === index ?
                   <>
-                    <Button variant="outlined" startIcon={<DoneIcon />} size="medium" onClick={() => update(tableCellEdit)} />
+                    <Button variant="outlined" startIcon={<DoneIcon />} size="medium" onClick={() => addNew(tableCellEdit)} />
                     <Button variant="outlined" startIcon={<CancelIcon />} sx={{ ml: 1.5 }} onClick={() => onCancel(index)} />
                   </>
                   :

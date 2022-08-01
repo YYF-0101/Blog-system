@@ -21,8 +21,8 @@ function App() {
 
   const loggedIn = (e) => {
     console.log(e)
-    localStorage.setItem('token', e.data.token.token)
-    console.log(localStorage.getItem('token'))
+    localStorage.setItem('luxdream-yanfengYang-token', e.data.token.token)
+    console.log(localStorage.getItem('luxdream-yanfengYang-token'))
     navigate("../products")
   }
 
@@ -37,7 +37,7 @@ function App() {
   }
 
 
-  console.log(localStorage.getItem('token'))
+  console.log(localStorage.getItem('luxdream-yanfengYang-token'))
   return (
     <>
       <Header logOut={logOut} />
