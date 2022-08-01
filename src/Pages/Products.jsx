@@ -16,6 +16,7 @@ import { InputAdornment } from '@mui/material'
 import { TextField } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
+import { TablePagination } from '@mui/material';
 
 const Product = () => {
   const [DefaultProducts, setDefaultProducts] = useState([])
@@ -27,6 +28,8 @@ const Product = () => {
   const [dialogData, setDialogData] = useState("")
   const [editNum, setEditNum] = useState("")
   const [productsOpacity, setProductsOpacity] = useState(false)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [page, setPage] = useState(0)
   const defaultDialog = {
     id: null,
     title: null,
@@ -184,6 +187,18 @@ const Product = () => {
     setProductsOpacity(!productsOpacity)
   }
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  }
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }
+
+  const SliceProducts =
+    Products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
@@ -216,8 +231,16 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody >
-            <PostTableCell products={Products} onOpen={onOpen} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} />
+            <PostTableCell products={SliceProducts} onOpen={onOpen} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} />
           </TableBody>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            count={Products.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          ></TablePagination>
         </Table>
         <ProductDialog dialogData={dialogData.id ? dialogData : defaultDialog} onOpen={onOpen} update={updataData} addNew={addNewData} open={isOpen} />
       </TableContainer>
