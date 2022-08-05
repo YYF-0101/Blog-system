@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import ProductDialog from '../Components/ProductDialog'
 import PostTableHeaderCell from '../Components/PostTableHeaderCell'
-import ExcellImportTool from '../Components/ReadExcel'
 import { request } from '../Resources/Interceptor'
 import PostTableCell from '../Components/PostTableCell'
 import Table from '@mui/material/Table'
@@ -11,7 +10,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import SearchIcon from '@mui/icons-material/Search'
-import { IconButton } from '@mui/material'
+import { IconButton, Button } from '@mui/material'
 import { InputAdornment } from '@mui/material'
 import { TextField } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
@@ -235,55 +234,76 @@ const Product = () => {
   }
 
   return (
-    <Box sx={{ width: 1250, maxWidth: { xs: 1250, md: 950 } }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
-        <form onSubmit={submitSearchForm}>
-          <TextField
-            placeholder="Search Title and Description"
-            type="search"
-            variant="outlined"
-            fullWidth
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="start">
-                  <IconButton onClick={submitSearchForm}>
-                    <SearchIcon />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-            onChange={e => setSearch(e.target.value)} />
-        </form>
-        <div>
-          <IconButton onClick={() => onOpen(defaultProduct)} ><AddIcon /></IconButton>
-          <IconButton onClick={() => onAdd()} >ADD NEW</IconButton>
-        </div>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead sx={{ opacity: productsOpacity ? "0.2" : "1" }}>
-            <TableRow>
-              <PostTableHeaderCell onSort={onSort} Icon={transformIcon} />
-            </TableRow>
-          </TableHead>
-          <TableBody >
-            <PostTableCell products={SliceProducts} onOpen={onOpen} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} addNew={creatProduct} />
-          </TableBody>
+    <Box>
+      <Box sx={{ mt: 2, maxWidth: { xs: 450, sm: 550, md: 850, xl: 1250 }, ml: "auto", mr: "auto" }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
+          <Box sx={{ minWidth: { xs: 150, md: 350 } }}>
+            <form onSubmit={submitSearchForm}>
+              <TextField
+                placeholder="Search Title and Description"
+                type="search"
+                variant="outlined"
+                fullWidth
+                size="small"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <IconButton onClick={submitSearchForm}>
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+                onChange={e => setSearch(e.target.value)} />
+            </form>
+          </Box>
+          <Box sx={{ display: { xs: "flex" } }} >
+            <IconButton sx={{ mr: 2 }} onClick={() => onOpen(defaultProduct)} ><AddIcon />
+            </IconButton>
+            <Button variant="outlined" onClick={() => onAdd()} >ADD NEW</Button>
+          </Box>
+        </Box>
+        <Paper sx={{ mt: 3, width: '100%', overflow: 'hidden' }}>
+          <TableContainer sx={{ maxHeight: 560, }} >
+            <Table stickyHeader sx={{ borderRadius: 2 }} aria-label="sticky table">
+              <TableHead sx={{ opacity: productsOpacity ? "0.2" : "1" }}>
+                <TableRow>
+                  <PostTableHeaderCell onSort={onSort} Icon={transformIcon} />
+                </TableRow>
+              </TableHead>
+              <TableBody >
+                <PostTableCell products={SliceProducts} onOpen={onOpen} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} addNew={creatProduct} />
+              </TableBody>
+            </Table>
+          </TableContainer>
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
+            component="div"
             count={Products.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           ></TablePagination>
-        </Table>
-        <ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={creatProduct} open={isOpen} />
-      </TableContainer>
-      <IconButton onClick={handleOnExport}>Export</IconButton>
-      <ExcellImportTool handleFile={handleFile} />
-    </Box>
+          <ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={creatProduct} open={isOpen} />
+        </Paper>
+        <Box sx={{ mt: 2, mb: 3, display: 'flex', justifyContent: 'space-between' }}>
+          <Button variant="contained" onClick={handleOnExport}>Export</Button>
+          <Button
+            variant="contained"
+            component="label"
+          >
+            Upload File
+            <input
+              type="file"
+              accept="xlsx, xls"
+              hidden
+              onChange={(e) => { handleFile(e) }}
+            />
+          </Button>
+        </Box>
+      </Box>
+    </Box >
   )
 }
 

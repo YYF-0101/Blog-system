@@ -18,10 +18,7 @@ const Header = ({ logOut }) => {
           borderBottom: 1
         }}>
         <Box>
-          <Button
-            component={RouterLink}
-            to='/products'
-          >Products</Button>
+          LOGO
         </Box>
 
         {auth() === true &&

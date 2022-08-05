@@ -67,16 +67,26 @@ const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel,
                   display: "inline-block",
                   position: 'relative',
                 }}>
-                {product.product_image && <Box
+                {editNum === index && !product.product_image &&
+                  <Box sx={{ position: "absolute", top: "43%", left: "20%" }}><input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleChange(e)} /></Box>
+                }
+                {product.product_image ? <Box
                   component="img"
                   sx={{
+                    height: 183,
+                    width: 300,
+                    maxHeight: { xs: 183, md: 117 },
+                    maxWidth: { xs: 300, md: 200 },
+                  }}
+                  alt={`${product.title} image`}
+                  src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />
+                  :
+                  <Box sx={{
                     height: 233,
                     width: 350,
                     maxHeight: { xs: 233, md: 167 },
                     maxWidth: { xs: 350, md: 250 },
-                  }}
-                  alt={`${product.title} image`}
-                  src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />}
+                  }}></Box>}
                 {editNum === index && product.product_image &&
                   <HighlightOffIcon
                     sx={{
@@ -87,10 +97,7 @@ const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel,
                     }} />
                 }
               </Box>
-              {editNum === index &&
 
-                <input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleChange(e)} />
-              }
             </TableCell>
             <TableCell align="right">
               {
