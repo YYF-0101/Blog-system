@@ -189,8 +189,8 @@ const Product = () => {
     setProducts(DefaultProducts)
   }
 
-  const handleChangePage = (newPage) => {
-    setPage(newPage);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage)
   }
 
   const handleChangeRowsPerPage = (event) => {
@@ -230,12 +230,12 @@ const Product = () => {
         return acc;
       }, {})))
 
-      Products.push.apply(rows, Products)
+      Products.push.apply(Products, rows)
     }
   }
 
   return (
-    <>
+    <Box sx={{ width: 1250, maxWidth: { xs: 1250, md: 950 } }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
         <form onSubmit={submitSearchForm}>
           <TextField
@@ -283,7 +283,7 @@ const Product = () => {
       </TableContainer>
       <IconButton onClick={handleOnExport}>Export</IconButton>
       <ExcellImportTool handleFile={handleFile} />
-    </>
+    </Box>
   )
 }
 
