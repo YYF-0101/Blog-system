@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import ProductDialog from '../Components/ProductDialog'
 import PostTableHeaderCell from '../Components/PostTableHeaderCell'
+import ExcellImportTool from '../Components/ReadExcel'
 import { request } from '../Resources/Interceptor'
 import PostTableCell from '../Components/PostTableCell'
 import Table from '@mui/material/Table'
@@ -16,6 +17,7 @@ import { TextField } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import { TablePagination } from '@mui/material';
+import * as XLSX from 'xlsx'
 
 const Product = () => {
   const [DefaultProducts, setDefaultProducts] = useState([])
@@ -29,6 +31,7 @@ const Product = () => {
   const [productsOpacity, setProductsOpacity] = useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [page, setPage] = useState(0)
+  const [rows, setRows] = useState([])
   const defaultProduct = {
     id: null,
     title: null,
@@ -180,13 +183,13 @@ const Product = () => {
     setProductsOpacity(!productsOpacity)
   }
 
-  const onCancel = (id) => {
+  const onCancel = () => {
     setEditNum('')
     setProductsOpacity(!productsOpacity)
     setProducts(DefaultProducts)
   }
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (newPage) => {
     setPage(newPage);
   }
 
@@ -203,6 +206,33 @@ const Product = () => {
 
   const SliceProducts =
     Products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+
+  const handleOnExport = () => {
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.json_to_sheet(Products)
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Products")
+
+    XLSX.writeFile(workbook, "luxdream.xlsx");
+  }
+
+  const handleFile = (e) => {
+    const uploadedFile = e.target.files[0]
+    const fileReader = new FileReader()
+
+    fileReader.readAsArrayBuffer(uploadedFile)
+    fileReader.onload = (e) => {
+      const bufferArray = e.target.result
+      const workbook = XLSX.read(bufferArray, { type: "buffer" })
+      const data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 })
+      setRows(data.slice(1).map((r) => r.reduce((acc, x, i) => {
+        acc[data[0][i]] = x;
+        return acc;
+      }, {})))
+
+      Products.push.apply(rows, Products)
+    }
+  }
 
   return (
     <>
@@ -251,6 +281,8 @@ const Product = () => {
         </Table>
         <ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={creatProduct} open={isOpen} />
       </TableContainer>
+      <IconButton onClick={handleOnExport}>Export</IconButton>
+      <ExcellImportTool handleFile={handleFile} />
     </>
   )
 }
