@@ -3,17 +3,28 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
-import { TextField } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { DialogTitle } from '@mui/material';
 
-const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel, productsOpacity, addNew }) => {
+const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, addNew, onUpdata }) => {
 
   const [tableCellEdit, setTableCellEdit] = useState([])
+  const [open, setOpen] = useState(false)
+  const [dialog, setDialog] = useState([])
   const inputRef = useRef(null);
+
+  const handleClickOpen = (prop) => {
+    setOpen(true);
+    setDialog(prop)
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const handleChange = (e) => {
     setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.name === "product_image" ? e.target.files[0] : e.target.value });
@@ -73,19 +84,19 @@ const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel,
                 {product.product_image ? <Box
                   component="img"
                   sx={{
-                    height: 183,
-                    width: 300,
-                    maxHeight: { xs: 183, md: 117 },
-                    maxWidth: { xs: 300, md: 200 },
+                    height: 93,
+                    width: 200,
+                    maxHeight: { xs: 93, md: 37 },
+                    maxWidth: { xs: 200, md: 100 },
                   }}
                   alt={`${product.title} image`}
                   src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />
                   :
                   <Box sx={{
-                    height: 233,
-                    width: 350,
-                    maxHeight: { xs: 233, md: 167 },
-                    maxWidth: { xs: 350, md: 250 },
+                    height: 133,
+                    width: 250,
+                    maxHeight: { xs: 133, md: 67 },
+                    maxWidth: { xs: 250, md: 150 },
                   }}></Box>}
                 {editNum === index && product.product_image &&
                   <HighlightOffIcon
@@ -103,27 +114,47 @@ const PostTableCell = ({ products, onDelet, onOpen, onToggle, editNum, onCancel,
               {
                 editNum === index ?
                   <>
-                    <Button variant="outlined" startIcon={<DoneIcon />} size="medium" onClick={() => addNew(tableCellEdit)} />
+                    <Button variant="outlined" startIcon={<DoneIcon />} size="medium" onClick={() => product.title ? onUpdata(tableCellEdit) : addNew(tableCellEdit)} />
                     <Button variant="outlined" startIcon={<CancelIcon />} sx={{ ml: 1.5 }} onClick={() => onCancel(index)} />
                   </>
                   :
                   <>
-                    <Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />
-                    <Button variant="outlined" startIcon={<DeleteIcon />} sx={{ ml: 1.5 }} onClick={() => onDelet(product.id)} />
                     <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => {
                       onToggle(index)
                       setTableCellEdit({ id: product.id })
                     }} >EDIT</Button>
+                    <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => handleClickOpen(product)} ><DeleteIcon /></Button>
                   </>
               }
-
             </TableCell>
           </TableRow>
         ))
       }
+      <Dialog open={open} >
+        <DialogTitle >
+          Data:{dialog.id}
+        </DialogTitle>
+        <DialogContent>
+          Are you sure to delete?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            onDelet(dialog.id)
+            handleClose()
+          }}>
+            Yes
+          </Button>
+          <Button onClick={handleClose}>
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
 
   )
 }
 
 export default PostTableCell
+
+
+//<Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />

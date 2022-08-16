@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import ProductDialog from '../Components/ProductDialog'
 import PostTableHeaderCell from '../Components/PostTableHeaderCell'
-import { request } from '../Resources/Interceptor'
+import { apiDelete, apiGet, apiPost, apiPut } from '../services'
 import PostTableCell from '../Components/PostTableCell'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -9,23 +9,18 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import SearchIcon from '@mui/icons-material/Search'
-import { IconButton, Button } from '@mui/material'
-import { InputAdornment } from '@mui/material'
-import { TextField } from '@mui/material'
+import { Button } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import { TablePagination } from '@mui/material';
 import * as XLSX from 'xlsx'
 
-const Product = () => {
+const Product = ({ searchedValue }) => {
   const [DefaultProducts, setDefaultProducts] = useState([])
   const [sorting, setSorting] = useState(false)
   const [transformIcon, setTransformIcon] = useState("")
   const [Products, setProducts] = useState([])
-  const [search, setSearch] = useState('search')
-  const [isOpen, setIsOpen] = useState(false)
-  const [dialogData, setDialogData] = useState("")
+  // const [isOpen, setIsOpen] = useState(false)
   const [editNum, setEditNum] = useState("")
   const [productsOpacity, setProductsOpacity] = useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -41,24 +36,30 @@ const Product = () => {
   }
 
   useEffect(() => {
-    request({ url: '/products' })
-      .then(response => {
-        setDefaultProducts(response.data)
-        setProducts(response.data.sort(function (a, b) {
-          return b.id - a.id
-        }))
+    apiGet('products').then(res => {
+      console.log(res.data)
+      const resData = res.data.sort(function (a, b) {
+        return b.id - a.id
       })
-      .catch(error => console.log(error))
-  }, [editNum])
+      setDefaultProducts(resData)
+      setProducts(resData)
+    })
+  }, [])
+
+  useEffect(() => {
+    setProducts(DefaultProducts.filter(product => {
+      if (searchedValue === '') {
+        return product;
+      } else if (product.title && product.title.toLowerCase().includes(searchedValue.toLowerCase())) {
+        return product;
+      } else if (product.description && product.description.toLowerCase().includes(searchedValue.toLowerCase())) {
+        return product;
+      }
+    }))
+  }, [searchedValue])
 
   const onDelet = (id) => {
-    setProducts(Products.filter((product) => product.id !== id))
-  }
-
-  const onSuccess = data => {
-    setProducts(Products
-      .filter((prod) => prod.title)
-      .map((product) => product.id === data.id ? data : product))
+    apiDelete(`product/${id}`).then(res => res.data && setProducts(Products.filter((product) => product.id !== id)))
   }
 
   const onSort = (cell) => {
@@ -113,35 +114,27 @@ const Product = () => {
     }
   }
 
-  const submitSearchForm = (e) => {
-    e.preventDefault()
+  const updataData = (data) => {
+    // const formData = new FormData()
+    // formData.append("id", data.id)
+    // formData.append("title", data.title)
+    // formData.append("description", data.description)
+    // formData.append("price", data.price)
 
-    setProducts(DefaultProducts.filter(product => {
-      if (search === '') {
-        return product;
-      } else if (product.title && product.title.toLowerCase().includes(search.toLowerCase())) {
-        return product;
-      } else if (product.description && product.description.toLowerCase().includes(search.toLowerCase())) {
-        return product;
-      }
-    }))
-  }
+    // console.log(formData.getAll())
 
-  const onOpen = (prod) => {
-    setIsOpen(!isOpen)
-    prod && setDialogData(prod)
-  }
-
-  const updataData = (prod) => {
-
-    console.log(prod)
-    request({ url: `/${prod.id}`, method: 'put', data: prod })
-      .then(res => {
-        onSuccess(res.data)
-        setIsOpen(false)
-        setEditNum('')
-      })
-      .catch(error => console.error('There was an error!', error));
+    console.log(data)
+    apiPut(`product/${data.id}`, data).then(res => {
+      console.log(res.data)
+      onSuccess(res.data)
+    })
+    // request({ url: `/product/${prod.id}`, method: 'put', data: prod })
+    //   .then(res => {
+    //     console.log(res.data)
+    //     onSuccess(res.data)
+    //     setEditNum('')
+    //   })
+    //   .catch(error => console.error('There was an error!', error));
     /*
   
     const formData = new FormData()
@@ -164,17 +157,24 @@ const Product = () => {
 
   }
 
-  const creatProduct = (prod) => {
-    const data = { ...prod, category_id: 99 }
-    request({ url: '/products', method: 'post', data: data })
-      .then(res => {
-        setIsOpen(false)
-        onSuccess(res.data)
-        setEditNum('')
-        setProductsOpacity(!productsOpacity)
-      })
-      .catch(error => console.error('There was an error!', error));
+  const onSuccess = data => {
+    console.log(data)
+    setEditNum('')
+    setProductsOpacity(!productsOpacity)
+    setProducts(Products.map((product) => product.id === data.id ? data : product))
+  }
 
+  const creatProduct = prod => {
+    const data = { ...prod, category_id: 99 }
+    apiPost('products', data).then(res => {
+      onSuccessAdd(res.data)
+    })
+  }
+
+  const onSuccessAdd = data => {
+    setProducts([data, ...Products.filter((prod) => prod.title)])
+    setEditNum('')
+    setProductsOpacity(!productsOpacity)
   }
 
   const onToggle = (id) => {
@@ -235,76 +235,82 @@ const Product = () => {
 
   return (
     <Box>
-      <Box sx={{ mt: 2, maxWidth: { xs: 450, sm: 550, md: 850, xl: 1250 }, ml: "auto", mr: "auto" }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
-          <Box sx={{ minWidth: { xs: 150, md: 350 } }}>
-            <form onSubmit={submitSearchForm}>
-              <TextField
-                placeholder="Search Title and Description"
-                type="search"
-                variant="outlined"
-                fullWidth
-                size="small"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton onClick={submitSearchForm}>
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-                onChange={e => setSearch(e.target.value)} />
-            </form>
+      {Products ?
+        <Box sx={{ mt: 2, maxWidth: { xs: 450, sm: 550, md: 850, xl: 1250 }, ml: "auto", mr: "auto" }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
+            <Button variant="outlined" onClick={() => onAdd()} >add<AddIcon /></Button>
+            <Box sx={{ display: { xs: "flex" } }} >
+              <Button variant="outlined" onClick={handleOnExport}>Export</Button>
+              <Button sx={{ ml: 2 }} variant="outlined" component="label">Upload File
+                <input type="file" accept="xlsx, xls" hidden
+                  onChange={(e) => { handleFile(e) }}
+                />
+              </Button>
+            </Box>
           </Box>
-          <Box sx={{ display: { xs: "flex" } }} >
-            <IconButton sx={{ mr: 2 }} onClick={() => onOpen(defaultProduct)} ><AddIcon />
-            </IconButton>
-            <Button variant="outlined" onClick={() => onAdd()} >ADD NEW</Button>
-          </Box>
-        </Box>
-        <Paper sx={{ mt: 3, width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ maxHeight: 560, }} >
-            <Table stickyHeader sx={{ borderRadius: 2 }} aria-label="sticky table">
-              <TableHead sx={{ opacity: productsOpacity ? "0.2" : "1" }}>
-                <TableRow>
-                  <PostTableHeaderCell onSort={onSort} Icon={transformIcon} />
-                </TableRow>
-              </TableHead>
-              <TableBody >
-                <PostTableCell products={SliceProducts} onOpen={onOpen} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} addNew={creatProduct} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={Products.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          ></TablePagination>
-          <ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={creatProduct} open={isOpen} />
-        </Paper>
-        <Box sx={{ mt: 2, mb: 3, display: 'flex', justifyContent: 'space-between' }}>
-          <Button variant="contained" onClick={handleOnExport}>Export</Button>
-          <Button
-            variant="contained"
-            component="label"
-          >
-            Upload File
-            <input
-              type="file"
-              accept="xlsx, xls"
-              hidden
-              onChange={(e) => { handleFile(e) }}
-            />
-          </Button>
-        </Box>
-      </Box>
+          <Paper sx={{ mt: 3, width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 760, userSelect: "none" }} >
+              <Table stickyHeader sx={{ borderRadius: 2, }} aria-label="sticky table">
+                <TableHead sx={{ opacity: productsOpacity ? "0.2" : "1" }}>
+                  <TableRow>
+                    <PostTableHeaderCell onSort={onSort} Icon={transformIcon} />
+                  </TableRow>
+                </TableHead>
+                <TableBody >
+                  <PostTableCell products={SliceProducts} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} addNew={creatProduct} onUpdata={updataData} />
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={Products.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            ></TablePagination>
+          </Paper>
+        </Box> :
+        <div>No products</div>}
     </Box >
   )
 }
 
 export default Product
+/*
+// const [dialogData, setDialogData] = useState("")
+
+//const onOpen = (prod) => {
+//setIsOpen(!isOpen)
+//prod && setDialogData(prod)}
+
+//dialog add button
+
+< IconButton sx = {{ mr: 2 }} onClick = {() => onOpen(defaultProduct)} > <AddIcon />
+</ >
+
+//<ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={creatProduct} open={isOpen} />
+
+//search
+<Box sx={{ minWidth: { xs: 150, md: 350 } }}>
+<form onSubmit={submitSearchForm}>
+  <TextField
+    placeholder="Search Title and Description"
+    type="search"
+    variant="outlined"
+    fullWidth
+    size="small"
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="start">
+          <IconButton onClick={submitSearchForm}>
+            <SearchIcon />
+          </IconButton>
+        </InputAdornment>
+      )
+    }}
+    onChange={e => setSearch(e.target.value)} />
+</form>
+</Box>
+*/

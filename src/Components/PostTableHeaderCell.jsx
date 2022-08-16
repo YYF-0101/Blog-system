@@ -43,10 +43,10 @@ const PostTableHeaderCell = ({ onSort, Icon }) => {
         }} />
       </TableCell>
       <TableCell align="right">
-        Product image
+        Product Image
       </TableCell>
       <TableCell align="right">
-        Edit
+        Action
       </TableCell>
     </>
   )

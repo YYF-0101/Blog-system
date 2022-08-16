@@ -1,29 +1,37 @@
 import axios from 'axios';
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import { auth, BaseUrl } from './Resources/API';
+import { auth } from './utils';
+import { BaseUrl } from './environment';
 import LoginPage from "./Pages/LoginPage";
 import Products from "./Pages/Products";
-import Header from "./Pages/Header";
+import Header from "./Layout/Header";
+import { useState } from 'react';
+import SnackBar from './Components/SnackBar';
 
 function App() {
   // test@gradspace.org  qwer1234
 
   const navigate = useNavigate()
+  const [searchedValue, setSearchedValue] = useState()
+  const [openMsg, setOpenMsg] = useState('')
+  const [open, setOpen] = useState(false)
 
   const authUser = (user) => {
     console.log(user)
 
     axios.post(`${BaseUrl}login`, user)
-      .then(res => loggedIn(res))
-      .catch(error => console.error('There was an error!', error))
+      .then(res => {
+        localStorage.setItem('luxdream-yanfengYang-token', res.data.token.token)
+        setOpenMsg("success")
+        setOpen(true)
+        navigate("../products")
+      })
+      .catch(error => {
+        setOpen(true)
+        setOpenMsg("unsuccess")
+        console.error('There was an error!', error)
+      })
 
-  }
-
-  const loggedIn = (e) => {
-    console.log(e)
-    localStorage.setItem('luxdream-yanfengYang-token', e.data.token.token)
-    console.log(localStorage.getItem('luxdream-yanfengYang-token'))
-    navigate("../products")
   }
 
   const logOut = () => {
@@ -31,21 +39,30 @@ function App() {
     navigate("../")
   }
 
-  window.onunload = () => {
-    // Clear the local storage
-    window.localStorage.clear()
+  // window.onunload = () => {
+  //   //Clear the local storage
+  //   window.localStorage.clear()
+  // }
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false)
   }
 
 
-  console.log(localStorage.getItem('luxdream-yanfengYang-token'))
+
   return (
     <>
-      <Header logOut={logOut} />
+      <Header logOut={logOut} setSearchedValue={setSearchedValue} />
       <Routes>
         <Route path="/" element={<LoginPage authUser={authUser} />} />
-        <Route path="/products" element={auth() ? <Products /> : <Navigate to="/" />} />
+        <Route path="/products" element={auth() ? <Products searchedValue={searchedValue} /> : <Navigate to="/" />} />
         {/* <Route path="/products" element={<Product />} /> */}
       </Routes>
+      <SnackBar openMsg={openMsg} open={open} handleClose={handleClose} />
     </>
   )
 }

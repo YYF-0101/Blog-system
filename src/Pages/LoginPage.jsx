@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { auth } from '../Resources/API';
+import { auth } from '../utils';
 
 
 const HomePage = ({ authUser }) => {
@@ -21,10 +21,9 @@ const HomePage = ({ authUser }) => {
 
   return (
     <>
-      {!auth() &&
-        <Box sx={{
-          mt: 8,
-        }}>
+      <Box sx={{}}>
+        <Box sx={{ mx: 'auto', width: 500 }}> <h3>Log in</h3></Box>
+        {!auth() &&
           <Box
             sx={{
               mx: 'auto',
@@ -52,8 +51,8 @@ const HomePage = ({ authUser }) => {
               Log In
             </Button>
           </Box>
-        </Box>
-      }
+        }
+      </Box>
     </>
   )
 
