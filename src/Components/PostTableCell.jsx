@@ -65,6 +65,7 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
             <TableCell align="right">
               {editNum === index ?
                 <TextField
+                  type='number'
                   name='price'
                   defaultValue={product.price}
                   onChange={e => handleChange(e)}

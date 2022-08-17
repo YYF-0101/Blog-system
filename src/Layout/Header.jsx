@@ -59,9 +59,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-export default function PrimarySearchAppBar({ setSearchedValue, logOut }) {
+export default function PrimarySearchAppBar({ setSearchedValue, logOut, inputValue, setInputValue }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [inputValue, setInputValue] = React.useState("");
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
@@ -154,7 +153,7 @@ export default function PrimarySearchAppBar({ setSearchedValue, logOut }) {
   );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ mx: "auto", maxWidth: { xs: 1200, md: 2000 }, flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
           <Typography

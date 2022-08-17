@@ -1,7 +1,6 @@
 import { BaseUrl } from "./environment";
 
 const token = localStorage.getItem('luxdream-yanfengYang-token')
-console.log(token)
 
 const onRequest = (config) => {
   config = {
@@ -15,7 +14,6 @@ const onRequest = (config) => {
         token,
       }
     }
-    console.log(newConfig)
     return newConfig
   }
   return config
@@ -27,7 +25,6 @@ const onRequestError = (error) => {
 }
 
 const onResponse = (response) => {
-  console.log(response)
   return response
 }
 

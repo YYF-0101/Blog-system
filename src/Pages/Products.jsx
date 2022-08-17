@@ -15,7 +15,7 @@ import Box from '@mui/material/Box'
 import { TablePagination } from '@mui/material';
 import * as XLSX from 'xlsx'
 
-const Product = ({ searchedValue }) => {
+const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [DefaultProducts, setDefaultProducts] = useState([])
   const [sorting, setSorting] = useState(false)
   const [transformIcon, setTransformIcon] = useState("")
@@ -37,7 +37,6 @@ const Product = ({ searchedValue }) => {
 
   useEffect(() => {
     apiGet('products').then(res => {
-      console.log(res.data)
       const resData = res.data.sort(function (a, b) {
         return b.id - a.id
       })
@@ -128,13 +127,6 @@ const Product = ({ searchedValue }) => {
       console.log(res.data)
       onSuccess(res.data)
     })
-    // request({ url: `/product/${prod.id}`, method: 'put', data: prod })
-    //   .then(res => {
-    //     console.log(res.data)
-    //     onSuccess(res.data)
-    //     setEditNum('')
-    //   })
-    //   .catch(error => console.error('There was an error!', error));
     /*
   
     const formData = new FormData()
@@ -158,7 +150,6 @@ const Product = ({ searchedValue }) => {
   }
 
   const onSuccess = data => {
-    console.log(data)
     setEditNum('')
     setProductsOpacity(!productsOpacity)
     setProducts(Products.map((product) => product.id === data.id ? data : product))
@@ -167,14 +158,12 @@ const Product = ({ searchedValue }) => {
   const creatProduct = prod => {
     const data = { ...prod, category_id: 99 }
     apiPost('products', data).then(res => {
-      onSuccessAdd(res.data)
+      setDefaultProducts([res.data, ...DefaultProducts.filter((prod) => prod.title)])
+      setEditNum('')
+      setProductsOpacity(!productsOpacity)
+      setInputValue("")
+      setSearchedValue("")
     })
-  }
-
-  const onSuccessAdd = data => {
-    setProducts([data, ...Products.filter((prod) => prod.title)])
-    setEditNum('')
-    setProductsOpacity(!productsOpacity)
   }
 
   const onToggle = (id) => {

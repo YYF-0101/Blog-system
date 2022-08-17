@@ -13,12 +13,11 @@ function App() {
 
   const navigate = useNavigate()
   const [searchedValue, setSearchedValue] = useState()
+  const [inputValue, setInputValue] = useState("")
   const [openMsg, setOpenMsg] = useState('')
   const [open, setOpen] = useState(false)
 
   const authUser = (user) => {
-    console.log(user)
-
     axios.post(`${BaseUrl}login`, user)
       .then(res => {
         localStorage.setItem('luxdream-yanfengYang-token', res.data.token.token)
@@ -48,18 +47,16 @@ function App() {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpen(false)
   }
 
 
-
   return (
     <>
-      <Header logOut={logOut} setSearchedValue={setSearchedValue} />
+      <Header logOut={logOut} setSearchedValue={setSearchedValue} setInputValue={setInputValue} inputValue={inputValue} />
       <Routes>
         <Route path="/" element={<LoginPage authUser={authUser} />} />
-        <Route path="/products" element={auth() ? <Products searchedValue={searchedValue} /> : <Navigate to="/" />} />
+        <Route path="/products" element={auth() ? <Products searchedValue={searchedValue} setSearchedValue={setSearchedValue} setInputValue={setInputValue} /> : <Navigate to="/" />} />
         {/* <Route path="/products" element={<Product />} /> */}
       </Routes>
       <SnackBar openMsg={openMsg} open={open} handleClose={handleClose} />
