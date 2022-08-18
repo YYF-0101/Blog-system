@@ -123,6 +123,8 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     formData.append('_method', 'put')
     if (picture) {
       formData.append('product_image', picture)
+    } else {
+      formData.append('product_image', null)
     }
 
     apiPut(`product/${data.id}`, formData).then(res => {
@@ -206,7 +208,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
 
   const deleteImg = (data) => {
     data.product_image && setProducts(Products.map((product) => product.id === data.id ? { ...product, ["product_image"]: "" } : product))
-    data.product_image && setTableCellEdit({ ...tableCellEdit, ["product_image"]: "" })
+    data.product_image && setTableCellEdit({ ...tableCellEdit, ["product_image"]: null })
   }
 
   return (
