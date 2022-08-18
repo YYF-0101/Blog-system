@@ -4,17 +4,17 @@ import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Box from '@mui/material/Box';
-import { Dialog, DialogActions, DialogContent, TextField } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, IconButton, TextField } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { DialogTitle } from '@mui/material';
 
-const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, addNew, onUpdata }) => {
+const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, addNew, onUpdata, setPicture, tableCellEdit, setTableCellEdit, deleteImg }) => {
 
-  const [tableCellEdit, setTableCellEdit] = useState([])
   const [open, setOpen] = useState(false)
   const [dialog, setDialog] = useState([])
+  const [img, setImg] = useState(true)
   const inputRef = useRef(null);
 
   const handleClickOpen = (prop) => {
@@ -27,7 +27,7 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
   }
 
   const handleChange = (e) => {
-    setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.name === "product_image" ? e.target.files[0] : e.target.value });
+    setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.value });
   }
 
   return (
@@ -79,34 +79,44 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
                   display: "inline-block",
                   position: 'relative',
                 }}>
-                {editNum === index && !product.product_image &&
-                  <Box sx={{ position: "absolute", top: "43%", left: "20%" }}><input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleChange(e)} /></Box>
-                }
-                {product.product_image ? <Box
-                  component="img"
-                  sx={{
-                    height: 93,
-                    width: 200,
-                    maxHeight: { xs: 93, md: 37 },
-                    maxWidth: { xs: 200, md: 100 },
-                  }}
-                  alt={`${product.title} image`}
-                  src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />
-                  :
+                {product.product_image &&
+                  <Box
+                    component="img"
+                    sx={{
+                      height: 93,
+                      width: 200,
+                      maxHeight: { xs: 93, md: 37 },
+                      maxWidth: { xs: 200, md: 100 },
+                    }}
+                    alt={`${product.title} image`}
+                    src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />}
+                {!product.product_image && editNum !== index && img &&
                   <Box sx={{
                     height: 133,
                     width: 250,
                     maxHeight: { xs: 133, md: 67 },
                     maxWidth: { xs: 250, md: 150 },
                   }}></Box>}
-                {editNum === index && product.product_image &&
-                  <HighlightOffIcon
+
+                {product.product_image && editNum === index &&
+                  <IconButton
                     sx={{
                       fontSize: 34,
                       position: 'absolute',
                       top: 0,
                       right: 0,
-                    }} />
+                    }}
+                    onClick={() => {
+                      setImg(false)
+                      deleteImg(product)
+                    }}
+                  >
+                    <HighlightOffIcon
+                    />
+                  </IconButton>
+                }
+                {!product.product_image && editNum === index && !img &&
+                  <Box ><input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => setPicture(e.target.files[0])} /></Box>
                 }
               </Box>
 
@@ -122,7 +132,7 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
                   <>
                     <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => {
                       onToggle(index)
-                      setTableCellEdit({ id: product.id })
+                      setTableCellEdit(() => product)
                     }} >EDIT</Button>
                     <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => handleClickOpen(product)} ><DeleteIcon /></Button>
                   </>

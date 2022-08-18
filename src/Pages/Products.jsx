@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import ProductDialog from '../Components/ProductDialog'
 import PostTableHeaderCell from '../Components/PostTableHeaderCell'
 import { apiDelete, apiGet, apiPost, apiPut } from '../services'
 import PostTableCell from '../Components/PostTableCell'
@@ -17,6 +16,7 @@ import * as XLSX from 'xlsx'
 
 const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [DefaultProducts, setDefaultProducts] = useState([])
+  const [tableCellEdit, setTableCellEdit] = useState({})
   const [sorting, setSorting] = useState(false)
   const [transformIcon, setTransformIcon] = useState("")
   const [Products, setProducts] = useState([])
@@ -26,6 +26,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [page, setPage] = useState(0)
   const [rows, setRows] = useState([])
+  const [picture, setPicture] = useState(null)
   const defaultProduct = {
     id: null,
     title: null,
@@ -49,9 +50,9 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     setProducts(DefaultProducts.filter(product => {
       if (searchedValue === '') {
         return product;
-      } else if (product.title && product.title.toLowerCase().includes(searchedValue.toLowerCase())) {
+      } else if (product.title && searchedValue && product.title.toLowerCase().includes(searchedValue.toLowerCase())) {
         return product;
-      } else if (product.description && product.description.toLowerCase().includes(searchedValue.toLowerCase())) {
+      } else if (product.description && searchedValue && product.description.toLowerCase().includes(searchedValue.toLowerCase())) {
         return product;
       }
     }))
@@ -113,40 +114,21 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     }
   }
 
+  let formData = new FormData()
   const updataData = (data) => {
-    // const formData = new FormData()
-    // formData.append("id", data.id)
-    // formData.append("title", data.title)
-    // formData.append("description", data.description)
-    // formData.append("price", data.price)
+    formData.append("id", data.id)
+    formData.append("title", data.title === "" ? "null" : data.title)
+    formData.append("description", data.description === "" ? "null" : data.description)
+    formData.append("price", data.price)
+    formData.append('_method', 'put')
+    if (picture) {
+      formData.append('product_image', picture)
+    }
 
-    // console.log(formData.getAll())
-
-    console.log(data)
-    apiPut(`product/${data.id}`, data).then(res => {
+    apiPut(`product/${data.id}`, formData).then(res => {
       console.log(res.data)
       onSuccess(res.data)
     })
-    /*
-  
-    const formData = new FormData()
-    formData.append("id", dialogProduct.id)
-    formData.append("title", dialogProduct.title)
-    formData.append("description", dialogProduct.description)
-    formData.append("price", dialogProduct.price)
-    if (dialogProduct.product_image) {
-      formData.append('product_image', dialogProduct.product_image)
-    }
-  
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-    
-    //setUpdateProduct(defaultProduct)
-    */
-
   }
 
   const onSuccess = data => {
@@ -166,7 +148,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     })
   }
 
-  const onToggle = (id) => {
+  const onToggle = id => {
     setEditNum(id)
     setProductsOpacity(!productsOpacity)
   }
@@ -204,7 +186,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     XLSX.writeFile(workbook, "luxdream.xlsx");
   }
 
-  const handleFile = (e) => {
+  const handleFile = e => {
     const uploadedFile = e.target.files[0]
     const fileReader = new FileReader()
 
@@ -220,6 +202,11 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
 
       Products.push.apply(Products, rows)
     }
+  }
+
+  const deleteImg = (data) => {
+    data.product_image && setProducts(Products.map((product) => product.id === data.id ? { ...product, ["product_image"]: "" } : product))
+    data.product_image && setTableCellEdit({ ...tableCellEdit, ["product_image"]: "" })
   }
 
   return (
@@ -246,7 +233,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody >
-                  <PostTableCell products={SliceProducts} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} update={updataData} productsOpacity={productsOpacity} addNew={creatProduct} onUpdata={updataData} />
+                  <PostTableCell products={SliceProducts} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} productsOpacity={productsOpacity} addNew={creatProduct} onUpdata={updataData} setPicture={setPicture} tableCellEdit={tableCellEdit} setTableCellEdit={setTableCellEdit} deleteImg={deleteImg} />
                 </TableBody>
               </Table>
             </TableContainer>
