@@ -1,12 +1,71 @@
+import { auth } from '../utils'
 import * as React from 'react'
-import { useState, useEffect } from 'react'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import PropTypes from 'prop-types'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 
 
-const SnackBar = ({ openMsg, open, time, handleClose, txt }) => {
+const SnackBar = ({ handleMessage, setMessage }) => {
+
+  const [openMsg, setOpenMsg] = useState('')
+  const [barTxt, setBarTxt] = useState('')
+  const [barTimer, setBarTimer] = useState()
+  const [open, setOpen] = useState(false)
+  const hours = 1
+  const now = new Date().getTime()
+  const setupTime = localStorage.getItem('setupTime')
+  const navigate = useNavigate()
+
+
+  useEffect(() => {
+    if (now - setupTime > hours * 60 * 1000 && setupTime) {
+      localStorage.clear()
+      setMessage("timeOut")
+    }
+  }, [auth()])
+
+  useEffect(() => {
+    switch (true) {
+      case handleMessage === "success":
+        setOpen(true)
+        setBarTxt("You are successfully logged in")
+        setBarTimer(4000)
+        setOpenMsg("success")
+        break;
+      case handleMessage === "wrong":
+        setOpen(true)
+        setBarTxt(" You have entered an invalid username or password")
+        setBarTimer(2000)
+        setOpenMsg("error")
+        break;
+      case handleMessage === "timeOut":
+        setOpen(true)
+        setBarTxt(" Time Out! Please Login again.")
+        setBarTimer(2000)
+        setOpenMsg("error")
+        break;
+      case handleMessage === "logOut":
+        setOpen(true)
+        setBarTxt(" You are now logged out")
+        setBarTimer(2000)
+        setOpenMsg("error")
+        break;
+      default:
+        break;
+    }
+  }, [handleMessage])
+
+
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false)
+  }
 
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -14,35 +73,17 @@ const SnackBar = ({ openMsg, open, time, handleClose, txt }) => {
 
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
-      <Snackbar open={open} autoHideDuration={time} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={openMsg} sx={{ width: '100%' }}>
-          {txt}
-          {/* You are successfully logged in */}
+      <Snackbar open={open} autoHideDuration={barTimer} onClose={() => handleClose()}>
+        <Alert onClose={() => handleClose()} severity={openMsg} sx={{ width: '100%' }}>
+          {barTxt}
         </Alert>
       </Snackbar>
-      {/* {openMsg == "success" &&
-        <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-            {txt}
-            {/* You are successfully logged in */}
-      {/* </Alert>
-        </Snackbar > */}
-      {/* } * /} */}
-      {/* {openMsg == "unsuccess" &&
-        <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-            You have entered an invalid username or password
-          </Alert>
-        </Snackbar>
-      } */}
     </Stack >
-
-
   )
 }
 
 Snackbar.defaultProps = {
-  txt: 'Task Tracker',
+  txt: 'Default Message',
 }
 
 Snackbar.propTypes = {

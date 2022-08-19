@@ -14,7 +14,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear'
-import { InputAdornment } from '@mui/material';
+import { InputAdornment } from '@mui/material'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',

@@ -34,15 +34,16 @@ const HomePage = ({ authUser }) => {
             }}>
             <TextField
               name='email'
-              label={'Email'}
-              id="margin-dense"
+              label='Email'
+              id="margin-dense1"
               margin="dense"
               onChange={e => handleChange(e)}
             />
             <TextField
               name='password'
-              label={'Password'}
-              id="margin-dense"
+              label='Password'
+              type="password"
+              id="margin-dense2"
               margin="dense"
               onChange={e => handleChange(e)}
             />

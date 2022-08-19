@@ -115,7 +115,10 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
                     />
                   </IconButton>
                 }
-                {!product.product_image && editNum === index && !img &&
+                {/* {!product.product_image && editNum === index && !img &&
+                  <Box ><input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => setPicture(e.target.files[0])} /></Box>
+                } */}
+                {!product.product_image && editNum === index &&
                   <Box ><input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => setPicture(e.target.files[0])} /></Box>
                 }
               </Box>

@@ -25,7 +25,6 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [productsOpacity, setProductsOpacity] = useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [page, setPage] = useState(0)
-  const [rows, setRows] = useState([])
   const [picture, setPicture] = useState(null)
   const defaultProduct = {
     id: null,
@@ -124,11 +123,10 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     if (picture) {
       formData.append('product_image', picture)
     } else {
-      formData.append('product_image', null)
+      formData.append('product_image', "")
     }
 
     apiPut(`product/${data.id}`, formData).then(res => {
-      console.log(res.data)
       onSuccess(res.data)
     })
   }
@@ -197,18 +195,19 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
       const bufferArray = e.target.result
       const workbook = XLSX.read(bufferArray, { type: "buffer" })
       const data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 })
-      setRows(data.slice(1).map((r) => r.reduce((acc, x, i) => {
-        acc[data[0][i]] = x;
-        return acc;
-      }, {})))
+      const SliceRows =
+        data.slice(1).map((r) => r.reduce((acc, x, i) => {
+          acc[data[0][i]] = x;
+          return acc;
+        }, {})).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
-      Products.push.apply(Products, rows)
+      Products.push.apply(Products, SliceRows)
     }
   }
 
   const deleteImg = (data) => {
-    data.product_image && setProducts(Products.map((product) => product.id === data.id ? { ...product, ["product_image"]: "" } : product))
-    data.product_image && setTableCellEdit({ ...tableCellEdit, ["product_image"]: null })
+    data.product_image && setProducts(Products.map((product) => product.id === data.id ? { ...product, "product_image": "" } : product))
+    data.product_image && setTableCellEdit({ ...tableCellEdit, "product_image": null })
   }
 
   return (
