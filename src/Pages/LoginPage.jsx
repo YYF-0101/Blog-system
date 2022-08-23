@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom"
 import { auth } from '../utils'
 import { apiPost } from '../services'
@@ -22,6 +22,10 @@ const HomePage = ({ setMessage }) => {
     setUser({ ...user, [e.target.name]: e.target.value })
   }
 
+  useEffect(() => {
+    auth() && navigate("../products")
+  }, [])
+
   const authUser = (user) => {
     apiPost('login', user)
       .then(res => {
@@ -36,36 +40,40 @@ const HomePage = ({ setMessage }) => {
   return (
     <>
       <Box sx={{}}>
-        <Box sx={{ mx: 'auto', width: 500 }}> <h3>Log in</h3></Box>
-        {!auth() &&
-          <Box
-            sx={{
-              mx: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              width: 500,
-              maxWidth: '100%',
-            }}>
-            <TextField
-              name='email'
-              label='Email'
-              id="margin-dense1"
-              margin="dense"
-              onChange={e => handleChange(e)}
-            />
-            <TextField
-              name='password'
-              label='Password'
-              type="password"
-              id="margin-dense2"
-              margin="dense"
-              onChange={e => handleChange(e)}
-            />
+        {!auth() ?
+          <>
+            <Box sx={{ mx: 'auto', width: 500 }}> <h3>Log in</h3></Box>
+            <Box
+              sx={{
+                mx: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                width: 500,
+                maxWidth: '100%',
+              }}>
+              <TextField
+                name='email'
+                label='Email'
+                id="margin-dense1"
+                margin="dense"
+                onChange={e => handleChange(e)}
+              />
+              <TextField
+                name='password'
+                label='Password'
+                type="password"
+                id="margin-dense2"
+                margin="dense"
+                onChange={e => handleChange(e)}
+              />
 
-            <Button type='submit' onClick={() => authUser(user)}>
-              Log In
-            </Button>
-          </Box>
+              <Button type='submit' onClick={() => authUser(user)}>
+                Log In
+              </Button>
+            </Box>
+          </>
+          :
+          navigate("../products")
         }
       </Box>
     </>

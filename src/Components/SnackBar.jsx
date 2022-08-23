@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { auth } from '../utils'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
@@ -12,16 +11,13 @@ const SnackBar = ({ handleMessage, setMessage }) => {
   const [barTxt, setBarTxt] = useState('')
   const [barTimer, setBarTimer] = useState()
   const [open, setOpen] = useState(false)
-  const hours = 1
-  // const now = new Date().getTime()
-  const [currentTime, setCurrentTime] = useState()
+  const days = 1
+  const now = new Date().getTime()
   const setupTime = localStorage.getItem('setupTime')
 
   useEffect(() => {
-    setCurrentTime(new Date().getTime(), 300)
-    if (currentTime - setupTime > hours * 60 * 100) {
+    if (now - setupTime > days * 60 * 1000 * 60 * 24) {
       localStorage.clear()
-      setMessage("timeOut")
     }
   }, [])
 
@@ -36,12 +32,6 @@ const SnackBar = ({ handleMessage, setMessage }) => {
       case handleMessage === "wrong":
         setOpen(true)
         setBarTxt(" You have entered an invalid username or password")
-        setBarTimer(2000)
-        setOpenMsg("error")
-        break;
-      case handleMessage === "timeOut":
-        setOpen(true)
-        setBarTxt(" Time Out! Please Login again.")
         setBarTimer(2000)
         setOpenMsg("error")
         break;

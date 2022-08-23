@@ -8,7 +8,6 @@ import SnackBar from './Components/SnackBar'
 
 function App() {
   // test@gradspace.org  qwer1234
-
   const [searchedValue, setSearchedValue] = useState()
   const [inputValue, setInputValue] = useState("")
   const [message, setMessage] = useState("")
@@ -19,7 +18,6 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage setMessage={setMessage} />} />
         <Route path="/products" element={auth() ? <Products searchedValue={searchedValue} setSearchedValue={setSearchedValue} setInputValue={setInputValue} /> : <Navigate to="/" />} />
-        {/* <Route path="/products" element={<Product />} /> */}
       </Routes>
       <SnackBar handleMessage={message} setMessage={setMessage} />
     </>
