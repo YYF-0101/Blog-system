@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react'
-import Button from '@mui/material/Button';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import SendIcon from '@mui/icons-material/Send';
-import Box from '@mui/material/Box';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Button from '@mui/material/Button'
+import DialogActions from '@mui/material/DialogActions'
+import TextField from '@mui/material/TextField'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import SendIcon from '@mui/icons-material/Send'
+import Box from '@mui/material/Box'
+import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 
 const ProductDialog = ({ open, dialogData, onOpen, update, addNew }) => {
   //const element = document.querySelector('#put-request-error-handling .date-updated')

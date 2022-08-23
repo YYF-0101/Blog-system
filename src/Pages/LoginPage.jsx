@@ -1,22 +1,36 @@
-import { useState } from 'react';
-import { Box } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { auth } from '../utils';
+import { useState } from 'react'
+import { useNavigate } from "react-router-dom"
+import { auth } from '../utils'
+import { apiPost } from '../services'
+import { Box } from '@mui/material'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 
-
-const HomePage = ({ authUser }) => {
+const HomePage = ({ setMessage }) => {
   // test@gradspace.org  qwer1234
 
   const defaultUser = {
     email: '',
     password: '',
   }
+  const now = new Date().getTime()
 
   const [user, setUser] = useState(defaultUser)
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value })
+  }
+
+  const authUser = (user) => {
+    apiPost('login', user)
+      .then(res => {
+        localStorage.setItem('luxdream-yanfengYang-token', res.data.token.token)
+        setMessage("success")
+        navigate("../products")
+        localStorage.setItem('setupTime', now)
+      })
+      .catch(() => { setMessage("wrong") })
   }
 
   return (

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import PostTableHeaderCell from '../Components/PostTableHeaderCell'
+import * as XLSX from 'xlsx'
 import { apiDelete, apiGet, apiPost, apiPut } from '../services'
-import PostTableCell from '../Components/PostTableCell'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
@@ -11,14 +10,13 @@ import Paper from '@mui/material/Paper'
 import { Button } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
-import { TablePagination } from '@mui/material';
-import * as XLSX from 'xlsx'
+import { TablePagination } from '@mui/material'
+import PostTableHeaderCell from '../Components/PostTableHeaderCell'
+import PostTableCell from '../Components/PostTableCell'
 
 const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [DefaultProducts, setDefaultProducts] = useState([])
   const [tableCellEdit, setTableCellEdit] = useState({})
-  const [sorting, setSorting] = useState(false)
-  const [transformIcon, setTransformIcon] = useState("")
   const [Products, setProducts] = useState([])
   // const [isOpen, setIsOpen] = useState(false)
   const [editNum, setEditNum] = useState("")
@@ -26,6 +24,9 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [page, setPage] = useState(0)
   const [picture, setPicture] = useState(null)
+  const [order, setOrder] = useState()
+  const [orderBy, setOrderBy] = useState()
+  let formData = new FormData()
   const defaultProduct = {
     id: null,
     title: null,
@@ -61,70 +62,18 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     apiDelete(`product/${id}`).then(res => res.data && setProducts(Products.filter((product) => product.id !== id)))
   }
 
-  const onSort = (cell) => {
-    setSorting(!sorting)
-    switch (true) {
 
-      case cell === "Title" && sorting === false:
-        setProducts([...Products].sort(function (a, b) {
-          return a.title?.localeCompare(b.title)
-        }))
-        setTransformIcon("Title")
-        break;
-
-      case cell === "Title" && sorting === true:
-        setProducts([...Products].sort(function (a, b) {
-          return b.title?.localeCompare(a.title)
-        }))
-        setTransformIcon("Title")
-        break;
-
-      case cell === "Description" && sorting === false:
-        setProducts([...Products].sort(function (a, b) {
-          return a.description?.localeCompare(b.description)
-        }))
-        setTransformIcon("Description")
-        break;
-
-      case cell === "Description" && sorting === true:
-        setProducts([...Products].sort(function (a, b) {
-          return b.description?.localeCompare(a.description)
-        }))
-        setTransformIcon("Description")
-        break;
-
-      case cell === "Price" && sorting === false:
-        setProducts([...Products].sort(function (a, b) {
-          return a.price - b.price
-        }))
-        setTransformIcon("Price")
-        break;
-
-      case cell === "Price" && sorting === true:
-        setProducts([...Products].sort(function (a, b) {
-          return b.price - a.price
-        }))
-        setTransformIcon("Price")
-        break;
-
-      default:
-        console.log("wrong click")
-        break;
-    }
-  }
-
-  let formData = new FormData()
-  const updataData = (data) => {
+  const updataData = data => {
     formData.append("id", data.id)
-    formData.append("title", data.title === "" ? "null" : data.title)
-    formData.append("description", data.description === "" ? "null" : data.description)
+    formData.append("title", data.title)
+    formData.append("description", data.description)
     formData.append("price", data.price)
-    formData.append('_method', 'put')
     if (picture) {
       formData.append('product_image', picture)
     } else {
-      formData.append('product_image', "")
+      formData.append('product_image', data.product_image)
     }
+    formData.append('_method', 'put')
 
     apiPut(`product/${data.id}`, formData).then(res => {
       onSuccess(res.data)
@@ -174,9 +123,6 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     setProductsOpacity(!productsOpacity)
   }
 
-  const SliceProducts =
-    Products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-
   const handleOnExport = () => {
     const workbook = XLSX.utils.book_new()
     const worksheet = XLSX.utils.json_to_sheet(Products)
@@ -210,6 +156,12 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     data.product_image && setTableCellEdit({ ...tableCellEdit, "product_image": null })
   }
 
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  }
+
   return (
     <Box>
       {Products ?
@@ -230,11 +182,11 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
               <Table stickyHeader sx={{ borderRadius: 2, }} aria-label="sticky table">
                 <TableHead sx={{ opacity: productsOpacity ? "0.2" : "1" }}>
                   <TableRow>
-                    <PostTableHeaderCell onSort={onSort} Icon={transformIcon} />
+                    <PostTableHeaderCell handleRequestSort={handleRequestSort} orderBy={orderBy} order={order} />
                   </TableRow>
                 </TableHead>
                 <TableBody >
-                  <PostTableCell products={SliceProducts} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} productsOpacity={productsOpacity} addNew={creatProduct} onUpdata={updataData} setPicture={setPicture} tableCellEdit={tableCellEdit} setTableCellEdit={setTableCellEdit} deleteImg={deleteImg} />
+                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} productsOpacity={productsOpacity} addNew={creatProduct} onUpdata={updataData} setPicture={setPicture} tableCellEdit={tableCellEdit} setTableCellEdit={setTableCellEdit} deleteImg={deleteImg} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} />
                 </TableBody>
               </Table>
             </TableContainer>

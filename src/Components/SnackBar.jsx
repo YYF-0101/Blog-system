@@ -1,31 +1,29 @@
-import { auth } from '../utils'
 import * as React from 'react'
+import { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import { auth } from '../utils'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
-import PropTypes from 'prop-types'
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'
 
 
 const SnackBar = ({ handleMessage, setMessage }) => {
-
   const [openMsg, setOpenMsg] = useState('')
   const [barTxt, setBarTxt] = useState('')
   const [barTimer, setBarTimer] = useState()
   const [open, setOpen] = useState(false)
   const hours = 1
-  const now = new Date().getTime()
+  // const now = new Date().getTime()
+  const [currentTime, setCurrentTime] = useState()
   const setupTime = localStorage.getItem('setupTime')
-  const navigate = useNavigate()
-
 
   useEffect(() => {
-    if (now - setupTime > hours * 60 * 1000 && setupTime) {
+    setCurrentTime(new Date().getTime(), 300)
+    if (currentTime - setupTime > hours * 60 * 100) {
       localStorage.clear()
       setMessage("timeOut")
     }
-  }, [auth()])
+  }, [])
 
   useEffect(() => {
     switch (true) {
@@ -56,9 +54,7 @@ const SnackBar = ({ handleMessage, setMessage }) => {
       default:
         break;
     }
-  }, [handleMessage])
-
-
+  }, [setMessage])
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {

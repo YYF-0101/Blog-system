@@ -1,17 +1,17 @@
 
-import { auth } from '../utils';
-import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MoreIcon from '@mui/icons-material/MoreVert';
+import { useState } from 'react'
+import { auth } from '../utils'
+import { styled, alpha } from '@mui/material/styles'
+import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
+import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import MenuItem from '@mui/material/MenuItem'
+import Menu from '@mui/material/Menu'
+import SearchIcon from '@mui/icons-material/Search'
+import AccountCircle from '@mui/icons-material/AccountCircle'
+import MoreIcon from '@mui/icons-material/MoreVert'
 import { TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear'
 import { InputAdornment } from '@mui/material'
@@ -32,17 +32,17 @@ const Search = styled('div')(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar({ setSearchedValue, logOut, inputValue, setInputValue }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+export default function PrimarySearchAppBar({ setSearchedValue, inputValue, setInputValue, setMessage }) {
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null)
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const isMenuOpen = Boolean(anchorEl)
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
 
   const handleClearClick = () => {
     setInputValue("")
     setSearchedValue('')
-  };
+  }
 
   const search = (e) => {
     e.preventDefault()
@@ -51,20 +51,25 @@ export default function PrimarySearchAppBar({ setSearchedValue, logOut, inputVal
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
-  };
+  }
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
-  };
+  }
 
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
-  };
+  }
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
-  };
+  }
+
+  const logOut = () => {
+    localStorage.clear()
+    setMessage("logOut")
+  }
 
 
   const menuId = 'primary-search-account-menu';
