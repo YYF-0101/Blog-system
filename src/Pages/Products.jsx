@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import * as XLSX from 'xlsx'
 import { apiDelete, apiGet, apiPost, apiPut } from '../services'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -13,6 +12,8 @@ import Box from '@mui/material/Box'
 import { TablePagination } from '@mui/material'
 import PostTableHeaderCell from '../Components/PostTableHeaderCell'
 import PostTableCell from '../Components/PostTableCell'
+import ImportExcel from '../Excel/ImportExcel'
+import ExportExcel from '../Excel/ExportExcel'
 
 const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [DefaultProducts, setDefaultProducts] = useState([])
@@ -123,33 +124,6 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     setProductsOpacity(!productsOpacity)
   }
 
-  const handleOnExport = () => {
-    const workbook = XLSX.utils.book_new()
-    const worksheet = XLSX.utils.json_to_sheet(Products)
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Products")
-
-    XLSX.writeFile(workbook, "luxdream.xlsx");
-  }
-
-  const handleFile = e => {
-    const uploadedFile = e.target.files[0]
-    const fileReader = new FileReader()
-
-    fileReader.readAsArrayBuffer(uploadedFile)
-    fileReader.onload = (e) => {
-      const bufferArray = e.target.result
-      const workbook = XLSX.read(bufferArray, { type: "buffer" })
-      const data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 })
-      const SliceRows =
-        data.slice(1).map((r) => r.reduce((acc, x, i) => {
-          acc[data[0][i]] = x;
-          return acc;
-        }, {})).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-
-      Products.push.apply(Products, SliceRows)
-    }
-  }
 
   const deleteImg = (data) => {
     data.product_image && setProducts(Products.map((product) => product.id === data.id ? { ...product, "product_image": "" } : product))
@@ -169,12 +143,8 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
             <Button variant="outlined" onClick={() => onAdd()} >add<AddIcon /></Button>
             <Box sx={{ display: { xs: "flex" } }} >
-              <Button variant="outlined" onClick={handleOnExport}>Export</Button>
-              <Button sx={{ ml: 2 }} variant="outlined" component="label">Upload File
-                <input type="file" accept="xlsx, xls" hidden
-                  onChange={(e) => { handleFile(e) }}
-                />
-              </Button>
+              <ExportExcel Products={Products} />
+              <ImportExcel Products={Products} setProducts={setProducts} />
             </Box>
           </Box>
           <Paper sx={{ mt: 3, width: '100%', overflow: 'hidden' }}>
