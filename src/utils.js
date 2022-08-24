@@ -1,3 +1,34 @@
+const days = 7
+const now = new Date().getTime()
+const setupTime = localStorage.getItem('setupTime')
+
+export const messageData = [
+  {
+    id: 'success',
+    txt: 'You are successfully logged in',
+    time: 4000,
+    label: 'login'
+  },
+  {
+    id: 'error',
+    txt: 'You have entered an invalid username or password',
+    time: 2000,
+    label: 'wrong'
+  },
+  {
+    id: 'error',
+    txt: 'You are now logged out',
+    time: 2000,
+    label: 'logOut'
+  },
+]
+
+export const Timer = () => {
+  if (now - setupTime > days * 30 * 100) {
+    localStorage.clear()
+  }
+}
+
 export const auth = () => {
   if (localStorage.getItem('luxdream-yanfengYang-token')) {
     return true
@@ -21,3 +52,31 @@ export const getComparator = (order, orderBy) => {
     }
   }
 }
+
+export const headCells = [
+  {
+    id: 'title',
+    numeric: false,
+    label: 'Title',
+  },
+  {
+    id: 'description',
+    numeric: true,
+    label: 'Description',
+  },
+  {
+    id: 'price',
+    numeric: true,
+    label: 'Price ($)',
+  },
+  {
+    id: 'product_image',
+    numeric: true,
+    label: 'Product image',
+  },
+  {
+    id: 'action',
+    numeric: true,
+    label: 'Action',
+  },
+]

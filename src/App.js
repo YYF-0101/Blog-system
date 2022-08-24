@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Route, Routes, Navigate, } from "react-router-dom"
-import { auth } from './utils'
+import { auth, Timer } from './utils'
 import LoginPage from "./Pages/LoginPage"
 import Products from "./Pages/Products"
 import Header from "./Layout/Header"
@@ -12,6 +12,10 @@ function App() {
   const [inputValue, setInputValue] = useState("")
   const [message, setMessage] = useState("")
 
+  useEffect(() => {
+    auth() && Timer()
+  }, [])
+
   return (
     <>
       <Header setSearchedValue={setSearchedValue} setInputValue={setInputValue} inputValue={inputValue} setMessage={setMessage} />
@@ -19,7 +23,7 @@ function App() {
         <Route path="/" element={<LoginPage setMessage={setMessage} />} />
         <Route path="/products" element={auth() ? <Products searchedValue={searchedValue} setSearchedValue={setSearchedValue} setInputValue={setInputValue} /> : <Navigate to="/" />} />
       </Routes>
-      <SnackBar handleMessage={message} setMessage={setMessage} />
+      <SnackBar message={message} />
     </>
   )
 }

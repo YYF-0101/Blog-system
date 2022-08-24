@@ -14,9 +14,9 @@ const HomePage = ({ setMessage }) => {
     password: '',
   }
   const now = new Date().getTime()
+  const navigate = useNavigate()
 
   const [user, setUser] = useState(defaultUser)
-  const navigate = useNavigate()
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value })
@@ -24,13 +24,13 @@ const HomePage = ({ setMessage }) => {
 
   useEffect(() => {
     auth() && navigate("../products")
-  }, [])
+  }, [navigate])
 
   const authUser = (user) => {
     apiPost('login', user)
       .then(res => {
         localStorage.setItem('luxdream-yanfengYang-token', res.data.token.token)
-        setMessage("success")
+        setMessage("login")
         navigate("../products")
         localStorage.setItem('setupTime', now)
       })

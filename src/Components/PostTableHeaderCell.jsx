@@ -1,5 +1,4 @@
-import { useState } from "react"
-// import { onSort } from "../utils"
+import { headCells } from "../utils"
 import { TableCell } from "@mui/material"
 import Box from '@mui/material/Box'
 import TableSortLabel from '@mui/material/TableSortLabel'
@@ -7,34 +6,6 @@ import { visuallyHidden } from '@mui/utils'
 // import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 
 const PostTableHeaderCell = ({ handleRequestSort, order, orderBy }) => {
-  const headCells = [
-    {
-      id: 'title',
-      numeric: false,
-      label: 'Title',
-    },
-    {
-      id: 'description',
-      numeric: true,
-      label: 'Description',
-    },
-    {
-      id: 'price',
-      numeric: true,
-      label: 'Price ($)',
-    },
-    {
-      id: 'product_image',
-      numeric: true,
-      label: 'Product image',
-    },
-    {
-      id: 'action',
-      numeric: true,
-      label: 'Action',
-    },
-  ]
-
   const createSortHandler = (property) => (event) => {
     handleRequestSort(event, property);
   }

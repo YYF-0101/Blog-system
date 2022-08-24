@@ -1,56 +1,26 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
+import { messageData } from '../utils'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 
 
-const SnackBar = ({ handleMessage, setMessage }) => {
-  const [openMsg, setOpenMsg] = useState('')
-  const [barTxt, setBarTxt] = useState('')
-  const [barTimer, setBarTimer] = useState()
-  const [open, setOpen] = useState(false)
-  const days = 1
-  const now = new Date().getTime()
-  const setupTime = localStorage.getItem('setupTime')
+const SnackBar = ({ message }) => {
+  const [openMsg, setOpenMsg] = useState(false)
+  const [msg, setMsg] = useState({})
 
   useEffect(() => {
-    if (now - setupTime > days * 60 * 1000 * 60 * 24) {
-      localStorage.clear()
-    }
-  }, [])
-
-  useEffect(() => {
-    switch (true) {
-      case handleMessage === "success":
-        setOpen(true)
-        setBarTxt("You are successfully logged in")
-        setBarTimer(4000)
-        setOpenMsg("success")
-        break;
-      case handleMessage === "wrong":
-        setOpen(true)
-        setBarTxt(" You have entered an invalid username or password")
-        setBarTimer(2000)
-        setOpenMsg("error")
-        break;
-      case handleMessage === "logOut":
-        setOpen(true)
-        setBarTxt(" You are now logged out")
-        setBarTimer(2000)
-        setOpenMsg("error")
-        break;
-      default:
-        break;
-    }
-  }, [setMessage])
+    message &&
+      setOpenMsg(true)
+    setMsg(messageData.filter((e) => e.label === message))
+  }, [message])
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    setOpen(false)
+    setOpenMsg(false)
   }
 
   const Alert = React.forwardRef(function Alert(props, ref) {
@@ -58,22 +28,17 @@ const SnackBar = ({ handleMessage, setMessage }) => {
   });
 
   return (
-    <Stack spacing={2} sx={{ width: '100%' }}>
-      <Snackbar open={open} autoHideDuration={barTimer} onClose={() => handleClose()}>
-        <Alert onClose={() => handleClose()} severity={openMsg} sx={{ width: '100%' }}>
-          {barTxt}
-        </Alert>
-      </Snackbar>
-    </Stack >
+    <>
+      {msg.length > 0 &&
+        <Stack spacing={2} sx={{ width: '100%' }}>
+          <Snackbar open={openMsg} autoHideDuration={msg[0].time} onClose={() => handleClose()}>
+            <Alert onClose={() => handleClose()} severity={msg[0].id} sx={{ width: '100%' }}>
+              {msg[0].txt}
+            </Alert>
+          </Snackbar>
+        </Stack >}
+    </>
   )
-}
-
-Snackbar.defaultProps = {
-  txt: 'Default Message',
-}
-
-Snackbar.propTypes = {
-  txt: PropTypes.string,
 }
 
 export default SnackBar
