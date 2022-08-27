@@ -1,5 +1,7 @@
 import * as XLSX from 'xlsx'
-import { Button } from '@mui/material'
+import { Box } from '@mui/system'
+import { IconButton } from '@mui/material'
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 const ImportExcel = ({ Products, setProducts }) => {
 
@@ -22,13 +24,35 @@ const ImportExcel = ({ Products, setProducts }) => {
   }
 
   return (
+    <Box sx={{
+      display: "flex",
+      ml: 2
+    }}>
+      <p>Upload Excel</p>
+      <input
+        id="choose-file"
+        type="file"
+        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        hidden
+        onChange={(e) => { handleRequestImport(e) }}
+      />
+      <IconButton
+        sx={{ px: 1.5 }}
+        component="label"
+        htmlFor='choose-file'
+      >
+        <FileUploadIcon />
+      </IconButton >
+    </Box>
+  )
+}
+
+export default ImportExcel
+{/* 
+      </Box>
     <Button sx={{ ml: 2 }} variant="outlined" component="label">
       Upload File
       <input type="file" accept="xlsx, xls" hidden
         onChange={(e) => { handleRequestImport(e) }}
       />
-    </Button>
-  )
-}
-
-export default ImportExcel
+    </Button> */}

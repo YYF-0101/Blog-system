@@ -29,6 +29,7 @@ const onResponse = (response) => {
 }
 
 const onResponseError = (error) => {
+  console.log(error)
   return error
 }
 

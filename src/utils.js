@@ -13,7 +13,7 @@ export const messageData = [
     id: 'error',
     txt: 'You have entered an invalid username or password',
     time: 2000,
-    label: 'wrong'
+    label: 'Request failed with status code 401'
   },
   {
     id: 'error',
@@ -21,11 +21,19 @@ export const messageData = [
     time: 2000,
     label: 'logOut'
   },
+  {
+    id: 'error',
+    txt: 'Time out',
+    time: 2000,
+    label: 'timeOut'
+  },
 ]
 
 export const Timer = () => {
-  if (now - setupTime > days * 30 * 100) {
-    localStorage.clear()
+  if (now - setupTime > days * 60 * 1000 * 60 * 24) {
+    return true
+  } else {
+    return false
   }
 }
 
@@ -45,7 +53,13 @@ export const getComparator = (order, orderBy) => {
       return 1;
     } else if (b[orderBy] == null || b[orderBy] === "") {
       return -1;
-    } else if (order === "asc") {
+    } else if (orderBy === "price") {
+      if (order === "asc") {
+        return parseInt(a[orderBy], 10) < parseInt(b[orderBy], 10) ? -1 : 1
+      } else {
+        return parseInt(b[orderBy], 10) > parseInt(a[orderBy], 10) ? 1 : -1
+      }
+    } else if (order === "asc" && orderBy !== "price") {
       return a[orderBy].toUpperCase() < b[orderBy].toUpperCase() ? -1 : 1;
     } else {
       return a[orderBy].toUpperCase() < b[orderBy].toUpperCase() ? 1 : -1;

@@ -32,10 +32,11 @@ const Search = styled('div')(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar({ setSearchedValue, inputValue, setInputValue, setMessage }) {
+export default function PrimarySearchAppBar({ setSearchedValue, inputValue, setInputValue, setMessage, }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null)
 
+  const email = localStorage.getItem('email')
   const isMenuOpen = Boolean(anchorEl)
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
 
@@ -89,12 +90,13 @@ export default function PrimarySearchAppBar({ setSearchedValue, inputValue, setI
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={() => {
-        handleMenuClose()
-        logOut()
-      }}>Log out</MenuItem>
+      <MenuItem>{email}</MenuItem>
+      <MenuItem
+        sx={{ color: "red " }}
+        onClick={() => {
+          handleMenuClose()
+          logOut()
+        }}>Log Out</MenuItem>
     </Menu >
   );
 
@@ -140,7 +142,7 @@ export default function PrimarySearchAppBar({ setSearchedValue, inputValue, setI
             component="div"
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
-            MUI
+            Product Management
           </Typography>
           {auth() === true &&
             <>

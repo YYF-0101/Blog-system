@@ -11,8 +11,7 @@ const SnackBar = ({ message }) => {
   const [msg, setMsg] = useState({})
 
   useEffect(() => {
-    message &&
-      setOpenMsg(true)
+    message && setOpenMsg(true)
     setMsg(messageData.filter((e) => e.label === message))
   }, [message])
 

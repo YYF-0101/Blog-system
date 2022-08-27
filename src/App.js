@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Route, Routes, Navigate, } from "react-router-dom"
+import { Route, Routes, Navigate, useNavigate, } from "react-router-dom"
 import { auth, Timer } from './utils'
 import LoginPage from "./Pages/LoginPage"
 import Products from "./Pages/Products"
@@ -11,9 +11,14 @@ function App() {
   const [searchedValue, setSearchedValue] = useState()
   const [inputValue, setInputValue] = useState("")
   const [message, setMessage] = useState("")
+  const navigate = useNavigate()
 
   useEffect(() => {
-    auth() && Timer()
+    if (Timer()) {
+      localStorage.clear()
+      setMessage('timeOut')
+      navigate('../')
+    }
   }, [])
 
   return (

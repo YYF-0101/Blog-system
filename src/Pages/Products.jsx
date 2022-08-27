@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { Button } from '@mui/material'
+import { IconButton } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import { TablePagination } from '@mui/material'
@@ -14,28 +14,20 @@ import PostTableHeaderCell from '../Components/PostTableHeaderCell'
 import PostTableCell from '../Components/PostTableCell'
 import ImportExcel from '../Excel/ImportExcel'
 import ExportExcel from '../Excel/ExportExcel'
+import AddNewTableCell from '../Components/AddNewTableCell'
 
 const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [DefaultProducts, setDefaultProducts] = useState([])
-  const [tableCellEdit, setTableCellEdit] = useState({})
   const [Products, setProducts] = useState([])
-  // const [isOpen, setIsOpen] = useState(false)
-  const [editNum, setEditNum] = useState("")
+  const [rollEdit, setRollEdit] = useState("")
   const [productsOpacity, setProductsOpacity] = useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [page, setPage] = useState(0)
   const [picture, setPicture] = useState(null)
   const [order, setOrder] = useState()
   const [orderBy, setOrderBy] = useState()
+  const [onAddNew, setOnAddNew] = useState(false)
   let formData = new FormData()
-  const defaultProduct = {
-    id: null,
-    title: null,
-    description: null,
-    price: null,
-    product_image: null,
-    category_id: null,
-  }
 
   useEffect(() => {
     apiGet('products').then(res => {
@@ -44,10 +36,12 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
       })
       setDefaultProducts(resData)
       setProducts(resData)
+      setSearchedValue('')
     })
   }, [])
 
   useEffect(() => {
+    setPage(0)
     setProducts(DefaultProducts.filter(product => {
       if (searchedValue === '') {
         return product;
@@ -57,77 +51,81 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
         return product;
       }
     }))
-  }, [searchedValue])
+  }, [searchedValue, DefaultProducts])
 
   const onDelet = (id) => {
-    apiDelete(`product/${id}`).then(res => res.data && setProducts(Products.filter((product) => product.id !== id)))
-  }
-
-
-  const updataData = data => {
-    formData.append("id", data.id)
-    formData.append("title", data.title)
-    formData.append("description", data.description)
-    formData.append("price", data.price)
-    if (picture) {
-      formData.append('product_image', picture)
-    } else {
-      formData.append('product_image', data.product_image)
-    }
-    formData.append('_method', 'put')
-
-    apiPut(`product/${data.id}`, formData).then(res => {
-      onSuccess(res.data)
+    apiDelete(`product/${id}`).then(res => {
+      setDefaultProducts(DefaultProducts.filter((product) => product.id !== id))
+      setSearchedValue('')
     })
   }
 
+  const handleData = data => {
+    data.id && formData.append('id', data.id)
+    formData.append('title', data.title)
+    formData.append('description', data.description)
+    formData.append('price', data.price)
+    if (picture) {
+      formData.append('product_image', picture)
+    }
+    if (Products.filter((p) => p.id === data.id).length < 1) {
+      formData.append('category_id', "99")
+      creatProduct(formData)
+    } else {
+      formData.append('_method', 'put')
+      apiPut(`product/${data.id}`, formData).then(res => {
+        onSuccess(res.data)
+      })
+    }
+  }
+
   const onSuccess = data => {
-    setEditNum('')
+    setRollEdit('')
     setProductsOpacity(!productsOpacity)
     setProducts(Products.map((product) => product.id === data.id ? data : product))
   }
 
   const creatProduct = prod => {
-    const data = { ...prod, category_id: 99 }
-    apiPost('products', data).then(res => {
-      setDefaultProducts([res.data, ...DefaultProducts.filter((prod) => prod.title)])
-      setEditNum('')
+    setOnAddNew(!onAddNew)
+    apiPost('products', prod).then(res => {
+      setDefaultProducts([res.data, ...DefaultProducts])
+      setRollEdit('')
       setProductsOpacity(!productsOpacity)
-      setInputValue("")
-      setSearchedValue("")
+      setInputValue('')
+      setSearchedValue('')
+      setPicture('')
+      setPage(0)
     })
   }
 
   const onToggle = id => {
-    setEditNum(id)
+    setRollEdit(id)
     setProductsOpacity(!productsOpacity)
   }
 
   const onCancel = () => {
-    setEditNum('')
+    setRollEdit('')
     setProductsOpacity(!productsOpacity)
-    setProducts(DefaultProducts)
+    setProducts(Products.filter((prod) => prod.title))
   }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   }
 
   const onAdd = () => {
-    setProducts(Products => [defaultProduct, ...Products])
-    setEditNum(0)
+    setOnAddNew(!onAddNew)
     setProductsOpacity(!productsOpacity)
   }
 
-
-  const deleteImg = (data) => {
+  const deleteImg = data => {
     data.product_image && setProducts(Products.map((product) => product.id === data.id ? { ...product, "product_image": "" } : product))
-    data.product_image && setTableCellEdit({ ...tableCellEdit, "product_image": null })
+    // data.product_image && setTableCellEdit({ ...tableCellEdit, "product_image": null })
   }
 
   const handleRequestSort = (event, property) => {
@@ -139,9 +137,9 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   return (
     <Box>
       {Products ?
-        <Box sx={{ mt: 2, maxWidth: { xs: 450, sm: 550, md: 850, xl: 1250 }, ml: "auto", mr: "auto" }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
-            <Button variant="outlined" onClick={() => onAdd()} >add<AddIcon /></Button>
+        <Box sx={{ mt: 2, maxWidth: { xs: 450, sm: 550, md: 1050, xl: 1650 }, ml: "auto", mr: "auto", userSelect: "none" }}>
+          <Box sx={{ fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
+            <Box sx={{ display: 'flex' }} ><p>Add New</p><IconButton variant="outlined" onClick={() => onAdd()} sx={{ px: 1.5 }}><AddIcon /></IconButton></Box>
             <Box sx={{ display: { xs: "flex" } }} >
               <ExportExcel Products={Products} />
               <ImportExcel Products={Products} setProducts={setProducts} />
@@ -156,7 +154,8 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody >
-                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={editNum} onCancel={onCancel} productsOpacity={productsOpacity} addNew={creatProduct} onUpdata={updataData} setPicture={setPicture} tableCellEdit={tableCellEdit} setTableCellEdit={setTableCellEdit} deleteImg={deleteImg} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} />
+                  {onAddNew && <AddNewTableCell setPicture={setPicture} addNew={handleData} onAdd={onAdd}></AddNewTableCell>}
+                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={rollEdit} onCancel={onCancel} productsOpacity={productsOpacity} onUpdata={handleData} setPicture={setPicture} deleteImg={deleteImg} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} />
                 </TableBody>
               </Table>
             </TableContainer>
@@ -171,45 +170,10 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
             ></TablePagination>
           </Paper>
         </Box> :
-        <div>No products</div>}
+        <div>No products</div>
+      }
     </Box >
   )
 }
 
 export default Product
-/*
-// const [dialogData, setDialogData] = useState("")
-
-//const onOpen = (prod) => {
-//setIsOpen(!isOpen)
-//prod && setDialogData(prod)}
-
-//dialog add button
-
-< IconButton sx = {{ mr: 2 }} onClick = {() => onOpen(defaultProduct)} > <AddIcon />
-</ >
-
-//<ProductDialog dialogData={dialogData.id ? dialogData : defaultProduct} onOpen={onOpen} update={updataData} addNew={creatProduct} open={isOpen} />
-
-//search
-<Box sx={{ minWidth: { xs: 150, md: 350 } }}>
-<form onSubmit={submitSearchForm}>
-  <TextField
-    placeholder="Search Title and Description"
-    type="search"
-    variant="outlined"
-    fullWidth
-    size="small"
-    InputProps={{
-      endAdornment: (
-        <InputAdornment position="start">
-          <IconButton onClick={submitSearchForm}>
-            <SearchIcon />
-          </IconButton>
-        </InputAdornment>
-      )
-    }}
-    onChange={e => setSearch(e.target.value)} />
-</form>
-</Box>
-*/

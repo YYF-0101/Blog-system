@@ -10,12 +10,14 @@ import DoneIcon from '@mui/icons-material/Done'
 import CancelIcon from '@mui/icons-material/Cancel'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { DialogTitle } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
 
-const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, addNew, onUpdata, setPicture, tableCellEdit, setTableCellEdit, deleteImg, order, orderBy, page, rowsPerPage }) => {
+const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, onUpdata, setPicture, deleteImg, order, orderBy, page, rowsPerPage }) => {
 
   const [open, setOpen] = useState(false)
   const [submit, setSubmit] = useState(false)
   const [dialog, setDialog] = useState({})
+  const [tableCellEdit, setTableCellEdit] = useState({})
   const [img, setImg] = useState(true)
   const inputRef = useRef(null);
 
@@ -29,7 +31,7 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
   }
 
   const handleChange = (e) => {
-    setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.value });
+    setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.value })
   }
 
   return (
@@ -141,20 +143,24 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
               <TableCell align="right">
                 {
                   editNum === index ?
-                    <>
-                      {submit && <Button variant="outlined" startIcon={<DoneIcon />} size="medium" onClick={() => product.title ? onUpdata(tableCellEdit) : addNew(tableCellEdit)} />}
-                      <Button variant="outlined" startIcon={<CancelIcon />} sx={{ ml: 1.5 }} onClick={() => {
+                    <Box sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+
+                    }}>
+                      {submit && <IconButton variant="outlined" size="medium" onClick={() => onUpdata(tableCellEdit)} ><DoneIcon /></IconButton>}
+                      <IconButton variant="outlined" sx={{ ml: "auto", }} onClick={() => {
                         setSubmit(false)
-                        onCancel(index)
-                      }} />
-                    </>
+                        onCancel()
+                      }} ><CancelIcon /></IconButton>
+                    </Box>
                     :
                     <>
-                      <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => {
+                      <IconButton variant="outlined" sx={{ ml: 1.5 }} onClick={() => {
                         onToggle(index)
                         setTableCellEdit(() => product)
-                      }} >EDIT</Button>
-                      <Button variant="outlined" sx={{ ml: 1.5 }} onClick={() => handleClickOpen(product)} ><DeleteIcon /></Button>
+                      }} ><EditIcon /></IconButton>
+                      <IconButton variant="outlined" sx={{ ml: 1.5 }} onClick={() => handleClickOpen(product)} ><DeleteIcon /></IconButton>
                     </>
                 }
               </TableCell>
