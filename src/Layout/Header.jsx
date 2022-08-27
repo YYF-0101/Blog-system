@@ -152,6 +152,7 @@ export default function PrimarySearchAppBar({ setSearchedValue, inputValue, setI
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="Search…"
+                    autoComplete='off'
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
