@@ -137,7 +137,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   return (
     <Box>
       {Products ?
-        <Box sx={{ mt: 2, maxWidth: { xs: 450, sm: 550, md: 1050, xl: 1650 }, ml: "auto", mr: "auto", userSelect: "none" }}>
+        <Box sx={{ mt: 2, maxWidth: { xs: 450, sm: 550, md: 1050, xl: 1450 }, ml: "auto", mr: "auto", userSelect: "none" }}>
           <Box sx={{ fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
             <Box sx={{ display: 'flex' }} ><p>Add New</p><IconButton variant="outlined" onClick={() => onAdd()} sx={{ px: 1.5 }}><AddIcon /></IconButton></Box>
             <Box sx={{ display: { xs: "flex" } }} >
