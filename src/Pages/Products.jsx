@@ -27,7 +27,18 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [order, setOrder] = useState()
   const [orderBy, setOrderBy] = useState()
   const [onAddNew, setOnAddNew] = useState(false)
+  const [selectedFile, setSelectedFile] = useState()
+  const [preview, setPreview] = useState()
   let formData = new FormData()
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview(undefined)
+      return
+    }
+    const objectUrl = URL.createObjectURL(selectedFile)
+    setPreview(objectUrl)
+  }, [selectedFile])
 
   useEffect(() => {
     apiGet('products').then(res => {
@@ -106,7 +117,6 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const onCancel = () => {
     setRollEdit('')
     setProductsOpacity(!productsOpacity)
-    setProducts(Products.filter((prod) => prod.title))
   }
 
   const handleChangePage = (event, newPage) => {
@@ -148,8 +158,8 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody >
-                  {onAddNew && <AddNewTableCell setPicture={setImgFile} addNew={handleData} onAdd={onAdd}></AddNewTableCell>}
-                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={rollEdit} onCancel={onCancel} productsOpacity={productsOpacity} onUpdata={handleData} setPicture={setImgFile} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} />
+                  {onAddNew && <AddNewTableCell setPicture={setImgFile} addNew={handleData} onAdd={onAdd} setSelectedFile={setSelectedFile} preview={preview} setPreview={setPreview}></AddNewTableCell>}
+                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={rollEdit} onCancel={onCancel} productsOpacity={productsOpacity} onUpdata={handleData} setPicture={setImgFile} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} setSelectedFile={setSelectedFile} preview={preview} setPreview={setPreview} />
                 </TableBody>
               </Table>
             </TableContainer>

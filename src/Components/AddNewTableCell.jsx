@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import Box from '@mui/material/Box'
@@ -6,16 +6,9 @@ import { IconButton, TextField } from '@mui/material'
 import DoneIcon from '@mui/icons-material/Done'
 import CancelIcon from '@mui/icons-material/Cancel'
 
-const AddNewTableCell = ({ setPicture, addNew, onAdd }) => {
+const AddNewTableCell = ({ setPicture, addNew, onAdd, setSelectedFile, preview, setPreview }) => {
   const inputRef = useRef(null)
   const [newProduct, setNewProduct] = useState({})
-  const [selectedFile, setSelectedFile] = useState()
-  const [preview, setPreview] = useState()
-
-  useEffect(() => {
-    const objectUrl = URL.createObjectURL(selectedFile)
-    setPreview(objectUrl)
-  }, [selectedFile])
 
   const handleChange = e => {
     setNewProduct({ ...newProduct, [e.target.name]: e.target.value })
@@ -55,10 +48,17 @@ const AddNewTableCell = ({ setPicture, addNew, onAdd }) => {
             position: 'relative',
           }}>
           <Box >
-            preview ? <img src={preview} />:<input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => {
-              setSelectedFile(e.target.files[0])
-              setPicture(e.target.files[0])
-            }} />
+            {preview ? <Box
+              component="img"
+              sx={{
+                height: 93,
+                width: 200,
+                maxHeight: { xs: 93, md: 37 },
+                maxWidth: { xs: 200, md: 100 },
+              }} src={preview} /> : <input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => {
+                setSelectedFile(e.target.files[0])
+                setPicture(e.target.files[0])
+              }} />}
           </Box>
         </Box>
       </TableCell>
@@ -68,8 +68,15 @@ const AddNewTableCell = ({ setPicture, addNew, onAdd }) => {
           justifyContent: "flex-end",
 
         }}>
-          {newProduct.price && newProduct.title && newProduct.description && <IconButton variant="outlined" size="medium" onClick={() => addNew(newProduct)} ><DoneIcon /></IconButton>}
-          <IconButton variant="outlined" sx={{ ml: "auto", }} onClick={() => onAdd()}><CancelIcon /></IconButton>
+          {newProduct.price && newProduct.title && newProduct.description && <IconButton variant="outlined" size="medium" onClick={() => {
+            addNew(newProduct)
+            setPreview(undefined)
+          }} ><DoneIcon /></IconButton>}
+          <IconButton variant="outlined" onClick={() => {
+            onAdd()
+            setPreview(undefined)
+          }
+          }><CancelIcon /></IconButton>
         </Box>
       </TableCell>
     </TableRow >

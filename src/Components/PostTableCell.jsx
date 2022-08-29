@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { getComparator } from '../utils'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
@@ -12,25 +12,13 @@ import { DialogTitle } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import UploadIcon from '@mui/icons-material/Upload'
 
-const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, onUpdata, setPicture, order, orderBy, page, rowsPerPage }) => {
+const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, onUpdata, setPicture, order, orderBy, page, rowsPerPage, setSelectedFile, preview, setPreview }) => {
 
   const [open, setOpen] = useState(false)
   const [submit, setSubmit] = useState(false)
   const [dialog, setDialog] = useState({})
   const [tableCellEdit, setTableCellEdit] = useState({})
-  const [selectedFile, setSelectedFile] = useState()
-  const [preview, setPreview] = useState()
   const inputRef = useRef(null)
-
-  useEffect(() => {
-    if (!selectedFile) {
-      setPreview(undefined)
-      return
-    }
-    const objectUrl = URL.createObjectURL(selectedFile)
-    console.log(objectUrl)
-    setPreview(objectUrl)
-  }, [selectedFile])
 
   const handleClickOpen = prop => {
     setOpen(true);
@@ -45,7 +33,6 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
     setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.value })
   }
 
-  console.log(preview)
   return (
     <>
       {
@@ -161,7 +148,10 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
                       justifyContent: "flex-end",
 
                     }}>
-                      {submit && <IconButton variant="outlined" size="medium" onClick={() => onUpdata(tableCellEdit)} ><DoneIcon /></IconButton>}
+                      {submit && <IconButton variant="outlined" size="medium" onClick={() => {
+                        onUpdata(tableCellEdit)
+                        setPreview(undefined)
+                      }} ><DoneIcon /></IconButton>}
                       <IconButton variant="outlined" onClick={() => {
                         setSubmit(false)
                         setPreview(undefined)
