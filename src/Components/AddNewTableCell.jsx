@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import Box from '@mui/material/Box'
@@ -9,6 +9,13 @@ import CancelIcon from '@mui/icons-material/Cancel'
 const AddNewTableCell = ({ setPicture, addNew, onAdd }) => {
   const inputRef = useRef(null)
   const [newProduct, setNewProduct] = useState({})
+  const [selectedFile, setSelectedFile] = useState()
+  const [preview, setPreview] = useState()
+
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(selectedFile)
+    setPreview(objectUrl)
+  }, [selectedFile])
 
   const handleChange = e => {
     setNewProduct({ ...newProduct, [e.target.name]: e.target.value })
@@ -47,9 +54,12 @@ const AddNewTableCell = ({ setPicture, addNew, onAdd }) => {
             display: "inline-block",
             position: 'relative',
           }}>
-          <Box ><input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => {
-            setPicture(e.target.files[0])
-          }} /></Box>
+          <Box >
+            preview ? <img src={preview} />:<input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => {
+              setSelectedFile(e.target.files[0])
+              setPicture(e.target.files[0])
+            }} />
+          </Box>
         </Box>
       </TableCell>
       <TableCell align="right">

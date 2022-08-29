@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { getComparator } from '../utils'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
@@ -8,20 +8,31 @@ import Box from '@mui/material/Box'
 import { Dialog, DialogActions, DialogContent, IconButton, TextField } from '@mui/material'
 import DoneIcon from '@mui/icons-material/Done'
 import CancelIcon from '@mui/icons-material/Cancel'
-import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { DialogTitle } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
+import UploadIcon from '@mui/icons-material/Upload'
 
-const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, onUpdata, setPicture, deleteImg, order, orderBy, page, rowsPerPage }) => {
+const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, productsOpacity, onUpdata, setPicture, order, orderBy, page, rowsPerPage }) => {
 
   const [open, setOpen] = useState(false)
   const [submit, setSubmit] = useState(false)
   const [dialog, setDialog] = useState({})
   const [tableCellEdit, setTableCellEdit] = useState({})
-  const [img, setImg] = useState(true)
-  const inputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState()
+  const [preview, setPreview] = useState()
+  const inputRef = useRef(null)
 
-  const handleClickOpen = (prop) => {
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview(undefined)
+      return
+    }
+    const objectUrl = URL.createObjectURL(selectedFile)
+    console.log(objectUrl)
+    setPreview(objectUrl)
+  }, [selectedFile])
+
+  const handleClickOpen = prop => {
     setOpen(true);
     setDialog(prop)
   }
@@ -30,10 +41,11 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
     setOpen(false);
   }
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setTableCellEdit({ ...tableCellEdit, [e.target.name]: e.target.value })
   }
 
+  console.log(preview)
   return (
     <>
       {
@@ -92,53 +104,54 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
               <TableCell align="right">
                 <Box
                   sx={{
-                    display: "inline-block",
-                    position: 'relative',
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    verticalAlign: "middle",
                   }}>
                   {product.product_image &&
-                    <Box
-                      component="img"
-                      sx={{
-                        height: 93,
-                        width: 200,
-                        maxHeight: { xs: 93, md: 37 },
-                        maxWidth: { xs: 200, md: 100 },
-                      }}
-                      alt={`${product.title} image`}
-                      src={`https://app.spiritx.co.nz/storage/${product.product_image}`} />}
-                  {!product.product_image && editNum !== index && img &&
+                    <Box>
+                      <Box
+                        component="img"
+                        sx={{
+                          height: 93,
+                          width: 200,
+                          maxHeight: { xs: 93, md: 37 },
+                          maxWidth: { xs: 200, md: 100 },
+                        }}
+                        alt={`${product.title} image`}
+                        src={preview && editNum === index ? preview : `https://app.spiritx.co.nz/storage/${product.product_image}`} />
+                    </Box>}
+                  {!product.product_image && preview && editNum === index &&
+                    <Box>
+                      <Box
+                        component="img"
+                        sx={{
+                          height: 93,
+                          width: 200,
+                          maxHeight: { xs: 93, md: 37 },
+                          maxWidth: { xs: 200, md: 100 },
+                        }}
+                        alt={`${product.title} image`}
+                        src={preview} />
+                    </Box>}
+                  {!product.product_image && editNum !== index && !preview &&
                     <Box sx={{
                       height: 133,
                       width: 250,
                       maxHeight: { xs: 133, md: 67 },
                       maxWidth: { xs: 250, md: 150 },
                     }}></Box>}
-
-                  {product.product_image && editNum === index &&
-                    <IconButton
-                      sx={{
-                        fontSize: 34,
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                      }}
-                      onClick={() => {
-                        setImg(false)
-                        deleteImg(product)
-                      }}
-                    >
-                      <HighlightOffIcon
-                      />
-                    </IconButton>
-                  }
-                  {!product.product_image && editNum === index &&
-                    <Box ><input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => {
-                      setSubmit(true)
-                      setPicture(e.target.files[0])
-                    }} /></Box>
+                  {editNum === index &&
+                    <Box sx={{ display: "inline-block", verticalAlign: "middle" }}>
+                      <IconButton component="label" htmlFor="upload-file"><UploadIcon /></IconButton>
+                      <input hidden id="upload-file" name="product_image" ref={inputRef} accept="image/*" multiple type="file" onChange={(e) => {
+                        setSubmit(true)
+                        setSelectedFile(e.target.files[0])
+                        setPicture(e.target.files[0])
+                      }} />
+                    </Box>
                   }
                 </Box>
-
               </TableCell>
               <TableCell align="right">
                 {
@@ -149,8 +162,9 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
 
                     }}>
                       {submit && <IconButton variant="outlined" size="medium" onClick={() => onUpdata(tableCellEdit)} ><DoneIcon /></IconButton>}
-                      <IconButton variant="outlined" sx={{ ml: "auto", }} onClick={() => {
+                      <IconButton variant="outlined" onClick={() => {
                         setSubmit(false)
+                        setPreview(undefined)
                         onCancel()
                       }} ><CancelIcon /></IconButton>
                     </Box>
@@ -187,11 +201,7 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
         </DialogActions>
       </Dialog>
     </>
-
   )
 }
 
 export default PostTableCell
-
-
-//<Button variant="outlined" startIcon={<EditIcon />} size="medium" onClick={() => onOpen(product)} />

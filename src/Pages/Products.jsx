@@ -23,7 +23,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [productsOpacity, setProductsOpacity] = useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [page, setPage] = useState(0)
-  const [picture, setPicture] = useState(null)
+  const [imgFile, setImgFile] = useState(null)
   const [order, setOrder] = useState()
   const [orderBy, setOrderBy] = useState()
   const [onAddNew, setOnAddNew] = useState(false)
@@ -65,8 +65,8 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     formData.append('title', data.title)
     formData.append('description', data.description)
     formData.append('price', data.price)
-    if (picture) {
-      formData.append('product_image', picture)
+    if (imgFile) {
+      formData.append('product_image', imgFile)
     }
     if (Products.filter((p) => p.id === data.id).length < 1) {
       formData.append('category_id', "99")
@@ -93,7 +93,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
       setProductsOpacity(!productsOpacity)
       setInputValue('')
       setSearchedValue('')
-      setPicture('')
+      setImgFile('')
       setPage(0)
     })
   }
@@ -123,17 +123,11 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     setProductsOpacity(!productsOpacity)
   }
 
-  const deleteImg = data => {
-    data.product_image && setProducts(Products.map((product) => product.id === data.id ? { ...product, "product_image": "" } : product))
-    // data.product_image && setTableCellEdit({ ...tableCellEdit, "product_image": null })
-  }
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   }
-
   return (
     <Box>
       {Products ?
@@ -154,8 +148,8 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody >
-                  {onAddNew && <AddNewTableCell setPicture={setPicture} addNew={handleData} onAdd={onAdd}></AddNewTableCell>}
-                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={rollEdit} onCancel={onCancel} productsOpacity={productsOpacity} onUpdata={handleData} setPicture={setPicture} deleteImg={deleteImg} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} />
+                  {onAddNew && <AddNewTableCell setPicture={setImgFile} addNew={handleData} onAdd={onAdd}></AddNewTableCell>}
+                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={rollEdit} onCancel={onCancel} productsOpacity={productsOpacity} onUpdata={handleData} setPicture={setImgFile} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} />
                 </TableBody>
               </Table>
             </TableContainer>

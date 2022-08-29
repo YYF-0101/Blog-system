@@ -23,7 +23,7 @@ export const messageData = [
   },
   {
     id: 'error',
-    txt: 'Time out',
+    txt: 'Login session expired',
     time: 2000,
     label: 'timeOut'
   },
