@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Route, Routes, Navigate, useNavigate, } from "react-router-dom"
 import { auth, Timer } from './utils'
-import LoginPage from "./Pages/LoginPage"
-import Products from "./Pages/Products"
-import Header from "./Layout/Header"
+import LoginPage from './Pages/LoginPage'
+import Products from './Pages/Products'
+import Header from './Layout/Header'
 import SnackBar from './Components/SnackBar'
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (Timer()) {
+    if (Timer() && auth()) {
       localStorage.clear()
       setMessage('timeOut')
       navigate('../')
@@ -26,9 +26,9 @@ function App() {
       <Header setSearchedValue={setSearchedValue} setInputValue={setInputValue} inputValue={inputValue} setMessage={setMessage} />
       <Routes>
         <Route path="/" element={<LoginPage setMessage={setMessage} />} />
-        <Route path="/products" element={auth() ? <Products searchedValue={searchedValue} setSearchedValue={setSearchedValue} setInputValue={setInputValue} /> : <Navigate to="/" />} />
+        <Route path="/products" element={auth() ? <Products searchedValue={searchedValue} setSearchedValue={setSearchedValue} setInputValue={setInputValue} setMessage={setMessage} /> : <Navigate to="/" />} />
       </Routes>
-      <SnackBar message={message} />
+      <SnackBar message={message} setMessage={setMessage} />
     </>
   )
 }

@@ -46,6 +46,12 @@ const HomePage = ({ setMessage }) => {
               maxWidth: '100%',
             }}>
             <TextField
+              inputProps={{
+                autoComplete: 'new-password',
+                form: {
+                  autoComplete: 'off',
+                },
+              }}
               name='email'
               label='Email'
               id="margin-dense1"
@@ -54,7 +60,10 @@ const HomePage = ({ setMessage }) => {
             />
             <TextField
               inputProps={{
-                autoComplete: 'off'
+                autoComplete: 'new-password',
+                form: {
+                  autoComplete: 'off',
+                },
               }}
               name='password'
               label='Password'

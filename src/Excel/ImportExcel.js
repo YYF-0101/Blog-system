@@ -3,7 +3,7 @@ import { Box } from '@mui/system'
 import { IconButton } from '@mui/material'
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
-const ImportExcel = ({ Products, setProducts }) => {
+const ImportExcel = ({ Products, setProducts, setMessage }) => {
 
   const handleRequestImport = e => {
     const uploadedFile = e.target.files[0]
@@ -20,6 +20,7 @@ const ImportExcel = ({ Products, setProducts }) => {
           return acc;
         }, {}))
       setProducts(SliceRows.map((pro) => pro), ...Products)
+      setMessage('import-success')
     }
   }
 

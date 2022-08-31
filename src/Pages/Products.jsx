@@ -16,7 +16,7 @@ import ImportExcel from '../Excel/ImportExcel'
 import ExportExcel from '../Excel/ExportExcel'
 import AddNewTableCell from '../Components/AddNewTableCell'
 
-const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
+const Product = ({ searchedValue, setSearchedValue, setInputValue, setMessage }) => {
   const [DefaultProducts, setDefaultProducts] = useState([])
   const [Products, setProducts] = useState([])
   const [rollEdit, setRollEdit] = useState("")
@@ -31,19 +31,11 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
   const [preview, setPreview] = useState()
   let formData = new FormData()
 
-  useEffect(() => {
-    if (!selectedFile) {
-      setPreview(undefined)
-      return
-    }
-    const objectUrl = URL.createObjectURL(selectedFile)
-    setPreview(objectUrl)
-  }, [selectedFile])
-
+  // Get Data from API with initial render
   useEffect(() => {
     apiGet('products').then(res => {
       const resData = res.data.sort(function (a, b) {
-        return b.id - a.id
+        return a.id - b.id
       })
       setDefaultProducts(resData)
       setProducts(resData)
@@ -51,6 +43,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     })
   }, [])
 
+  // Filter the data when the search value changed
   useEffect(() => {
     setPage(0)
     setProducts(DefaultProducts.filter(product => {
@@ -64,10 +57,22 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
     }))
   }, [searchedValue, DefaultProducts])
 
+  // create the picture to URL of user uploading Image in preview
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview(undefined)
+      return
+    }
+    const objectUrl = URL.createObjectURL(selectedFile)
+    setPreview(objectUrl)
+  }, [selectedFile])
+
+
   const onDelet = (id) => {
     apiDelete(`product/${id}`).then(res => {
-      setDefaultProducts(DefaultProducts.filter((product) => product.id !== id))
-      setSearchedValue('')
+      res.data && setDefaultProducts(DefaultProducts.filter((product) => product.id !== id))
+      res.data && setSearchedValue('')
+      res.data ? setMessage('delete-success') : setMessage('delete-unsuccess')
     })
   }
 
@@ -86,6 +91,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
       formData.append('_method', 'put')
       apiPut(`product/${data.id}`, formData).then(res => {
         onSuccess(res.data)
+        res.data ? setMessage('updated') : setMessage('notUpdated')
       })
     }
   }
@@ -106,6 +112,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
       setSearchedValue('')
       setImgFile('')
       setPage(0)
+      res.data ? setMessage('createdNew') : setMessage('notCreatedNew')
     })
   }
 
@@ -145,8 +152,8 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue }) => {
           <Box sx={{ fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: productsOpacity ? "0.2" : "1" }}>
             <Box sx={{ display: 'flex' }} ><p>Add New</p><IconButton variant="outlined" onClick={() => onAdd()} sx={{ px: 1.5 }}><AddIcon /></IconButton></Box>
             <Box sx={{ display: { xs: "flex" } }} >
-              <ExportExcel Products={Products} />
-              <ImportExcel Products={Products} setProducts={setProducts} />
+              <ExportExcel Products={Products} setMessage={setMessage} />
+              <ImportExcel Products={Products} setProducts={setProducts} setMessage={setMessage} />
             </Box>
           </Box>
           <Paper sx={{ mt: 3, width: '100%', overflow: 'hidden' }}>

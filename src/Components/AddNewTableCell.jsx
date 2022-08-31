@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import { IconButton, TextField } from '@mui/material'
 import DoneIcon from '@mui/icons-material/Done'
 import CancelIcon from '@mui/icons-material/Cancel'
+import UploadIcon from '@mui/icons-material/Upload'
 
 const AddNewTableCell = ({ setPicture, addNew, onAdd, setSelectedFile, preview, setPreview }) => {
   const inputRef = useRef(null)
@@ -36,6 +37,7 @@ const AddNewTableCell = ({ setPicture, addNew, onAdd, setSelectedFile, preview, 
         <TextField
           type='number'
           name='price'
+          InputProps={{ inputProps: { min: 0 } }}
           onChange={e => {
             handleChange(e)
           }}
@@ -47,18 +49,24 @@ const AddNewTableCell = ({ setPicture, addNew, onAdd, setSelectedFile, preview, 
             display: "inline-block",
             position: 'relative',
           }}>
-          <Box >
-            {preview ? <Box
+          <Box sx={{
+            display: "flex"
+          }}>
+            {preview && <Box
               component="img"
               sx={{
                 height: 93,
                 width: 200,
                 maxHeight: { xs: 93, md: 37 },
                 maxWidth: { xs: 200, md: 100 },
-              }} src={preview} /> : <input name="product_image" ref={inputRef} accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => {
+              }} src={preview} />}
+            <Box>
+              <IconButton component="label" htmlFor="addNew-file"><UploadIcon /></IconButton>
+              <input hidden name="product_image" ref={inputRef} accept="image/*" id="addNew-file" multiple type="file" onChange={(e) => {
                 setSelectedFile(e.target.files[0])
                 setPicture(e.target.files[0])
-              }} />}
+              }} />
+            </Box>
           </Box>
         </Box>
       </TableCell>
@@ -68,10 +76,14 @@ const AddNewTableCell = ({ setPicture, addNew, onAdd, setSelectedFile, preview, 
           justifyContent: "flex-end",
 
         }}>
-          {newProduct.price && newProduct.title && newProduct.description && <IconButton variant="outlined" size="medium" onClick={() => {
-            addNew(newProduct)
-            setPreview(undefined)
-          }} ><DoneIcon /></IconButton>}
+          <IconButton
+            disabled={!newProduct.title || !newProduct.description || !newProduct.price}
+            variant="outlined"
+            size="medium"
+            onClick={() => {
+              addNew(newProduct)
+              setPreview(undefined)
+            }} ><DoneIcon /></IconButton>
           <IconButton variant="outlined" onClick={() => {
             onAdd()
             setPreview(undefined)

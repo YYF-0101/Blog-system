@@ -79,6 +79,7 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
                   <TextField
                     type='number'
                     name='price'
+                    InputProps={{ inputProps: { min: 0 } }}
                     defaultValue={product.price}
                     onChange={e => {
                       setSubmit(true)
@@ -129,7 +130,7 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
                       maxWidth: { xs: 250, md: 150 },
                     }}></Box>}
                   {editNum === index &&
-                    <Box sx={{ display: "inline-block", verticalAlign: "middle" }}>
+                    <Box>
                       <IconButton component="label" htmlFor="upload-file"><UploadIcon /></IconButton>
                       <input hidden id="upload-file" name="product_image" ref={inputRef} accept="image/*" multiple type="file" onChange={(e) => {
                         setSubmit(true)
@@ -148,10 +149,14 @@ const PostTableCell = ({ products, onDelet, onToggle, editNum, onCancel, product
                       justifyContent: "flex-end",
 
                     }}>
-                      {submit && <IconButton variant="outlined" size="medium" onClick={() => {
-                        onUpdata(tableCellEdit)
-                        setPreview(undefined)
-                      }} ><DoneIcon /></IconButton>}
+                      <IconButton
+                        disabled={!submit}
+                        variant="outlined"
+                        size="medium"
+                        onClick={() => {
+                          onUpdata(tableCellEdit)
+                          setPreview(undefined)
+                        }} ><DoneIcon /></IconButton>
                       <IconButton variant="outlined" onClick={() => {
                         setSubmit(false)
                         setPreview(undefined)

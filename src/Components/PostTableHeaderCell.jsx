@@ -3,7 +3,6 @@ import { TableCell } from "@mui/material"
 import Box from '@mui/material/Box'
 import TableSortLabel from '@mui/material/TableSortLabel'
 import { visuallyHidden } from '@mui/utils'
-// import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 
 const PostTableHeaderCell = ({ handleRequestSort, order, orderBy }) => {
   const createSortHandler = (property) => (event) => {

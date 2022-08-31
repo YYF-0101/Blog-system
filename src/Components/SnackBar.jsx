@@ -6,13 +6,14 @@ import MuiAlert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 
 
-const SnackBar = ({ message }) => {
+const SnackBar = ({ message, setMessage }) => {
   const [openMsg, setOpenMsg] = useState(false)
   const [msg, setMsg] = useState({})
 
   useEffect(() => {
     message && setOpenMsg(true)
-    setMsg(messageData.filter((e) => e.label === message))
+    message && setMsg(messageData.filter((e) => e.label === message))
+    setMessage('')
   }, [message])
 
   const handleClose = (event, reason) => {
