@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { apiDelete, apiGet, apiPost, apiPut } from '../services'
+import { getComparator } from '../utils'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableContainer from '@mui/material/TableContainer'
@@ -82,10 +83,11 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue, setMessage })
     formData.append('description', data.description)
     formData.append('price', data.price)
     if (imgFile) {
+      console.log(imgFile)
       formData.append('product_image', imgFile)
     }
     if (Products.filter((p) => p.id === data.id).length < 1) {
-      formData.append('category_id', "99")
+      // formData.append('category_id', "99")
       creatProduct(formData)
     } else {
       formData.append('_method', 'put')
@@ -166,7 +168,13 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue, setMessage })
                 </TableHead>
                 <TableBody >
                   {onAddNew && <AddNewTableCell setPicture={setImgFile} addNew={handleData} onAdd={onAdd} setSelectedFile={setSelectedFile} preview={preview} setPreview={setPreview}></AddNewTableCell>}
-                  <PostTableCell products={Products} onDelet={onDelet} onToggle={onToggle} editNum={rollEdit} onCancel={onCancel} productsOpacity={productsOpacity} onUpdata={handleData} setPicture={setImgFile} order={order} orderBy={orderBy} page={page} rowsPerPage={rowsPerPage} setSelectedFile={setSelectedFile} preview={preview} setPreview={setPreview} />
+                  {
+                    Products
+                      .sort(getComparator(order, orderBy))
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((product, index) => (<PostTableCell key={index} product={product} index={index} onDelet={onDelet} onToggle={onToggle} editNum={rollEdit} onCancel={onCancel} productsOpacity={productsOpacity} onUpdata={handleData} setPicture={setImgFile} setSelectedFile={setSelectedFile} preview={preview} setPreview={setPreview} />
+                      ))
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
