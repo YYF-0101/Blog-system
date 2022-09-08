@@ -83,7 +83,6 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue, setMessage })
     formData.append('description', data.description)
     formData.append('price', data.price)
     if (imgFile) {
-      console.log(imgFile)
       formData.append('product_image', imgFile)
     }
     if (Products.filter((p) => p.id === data.id).length < 1) {
@@ -102,6 +101,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue, setMessage })
     setRollEdit('')
     setProductsOpacity(!productsOpacity)
     setProducts(Products.map((product) => product.id === data.id ? data : product))
+    setImgFile('')
   }
 
   const creatProduct = prod => {
@@ -147,6 +147,7 @@ const Product = ({ searchedValue, setSearchedValue, setInputValue, setMessage })
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   }
+  console.log(rollEdit)
   return (
     <Box>
       {Products ?

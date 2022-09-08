@@ -1,8 +1,7 @@
 import { BaseUrl } from "./environment";
 
-const token = localStorage.getItem('luxdream-yanfengYang-token')
-console.log(token)
 const onRequest = (config) => {
+  const token = localStorage.getItem('luxdream-yanfengYang-token')
   config = {
     ...config, BaseUrl
   }
