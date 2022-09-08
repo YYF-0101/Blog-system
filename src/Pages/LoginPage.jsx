@@ -25,8 +25,7 @@ const HomePage = ({ setMessage }) => {
 
   const authUser = user => apiPost('login', user)
     .then(res => {
-      console.log(res.data.token)
-      localStorage.setItem('email', res.data.user.email)
+      res.data && localStorage.setItem('email', res.data.user.email)
       res.data && localStorage.setItem('luxdream-yanfengYang-token', res.data.token)
       setMessage(res.message ? res.message : 'login')
       navigate(res.message ? '' : "../products")
